@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="一个人的独奏" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="##Spring IOC容器初始化 1. Spring IOC容器1.1 什么是IOC/DI？IOC即Inversion of Control英文缩写：控制反转，就是把原先我们代码里面需要实现的对象创建、依赖的代码，反转给容器来帮忙实现。那么必然的我们需要创建一个容器，同时需要一种描述来让容器知道需要创建的对象与对象的关系。这个描述最具体表现就是我们可配置的文件，比如xml，properties等">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="死磕Spring之IOC容器实现原理">
+<meta property="og:url" content="http://yoursite.com/2018/09/01/死磕Spring之IOC容器实现原理/index.html">
+<meta property="og:site_name" content="一个人的独奏">
+<meta property="og:description" content="##Spring IOC容器初始化 1. Spring IOC容器1.1 什么是IOC/DI？IOC即Inversion of Control英文缩写：控制反转，就是把原先我们代码里面需要实现的对象创建、依赖的代码，反转给容器来帮忙实现。那么必然的我们需要创建一个容器，同时需要一种描述来让容器知道需要创建的对象与对象的关系。这个描述最具体表现就是我们可配置的文件，比如xml，properties等">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2018/09/01/死磕Spring之IOC容器实现原理/2018-09-01-死磕Spring之IOC容器实现原理/sp1.png">
+<meta property="og:image" content="http://yoursite.com/2018/09/01/死磕Spring之IOC容器实现原理/2018-09-01-死磕Spring之IOC容器实现原理/sp3.png">
+<meta property="og:image" content="http://yoursite.com/2018/09/01/死磕Spring之IOC容器实现原理/2018-09-01-死磕Spring之IOC容器实现原理/sp6.png">
+<meta property="og:updated_time" content="2018-11-21T08:10:05.597Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="死磕Spring之IOC容器实现原理">
+<meta name="twitter:description" content="##Spring IOC容器初始化 1. Spring IOC容器1.1 什么是IOC/DI？IOC即Inversion of Control英文缩写：控制反转，就是把原先我们代码里面需要实现的对象创建、依赖的代码，反转给容器来帮忙实现。那么必然的我们需要创建一个容器，同时需要一种描述来让容器知道需要创建的对象与对象的关系。这个描述最具体表现就是我们可配置的文件，比如xml，properties等">
+<meta name="twitter:image" content="http://yoursite.com/2018/09/01/死磕Spring之IOC容器实现原理/2018-09-01-死磕Spring之IOC容器实现原理/sp1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/09/01/死磕Spring之IOC容器实现原理/">
+
+
+
+
+
+  <title>死磕Spring之IOC容器实现原理 | 一个人的独奏</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+  
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/WilliamDream"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个人的独奏</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/01/死磕Spring之IOC容器实现原理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">死磕Spring之IOC容器实现原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-01T19:55:39+08:00">
+                2018-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>##Spring IOC容器初始化</p>
+<h3 id="1-Spring-IOC容器"><a href="#1-Spring-IOC容器" class="headerlink" title="1. Spring IOC容器"></a>1. Spring IOC容器</h3><h4 id="1-1-什么是IOC-DI？"><a href="#1-1-什么是IOC-DI？" class="headerlink" title="1.1 什么是IOC/DI？"></a>1.1 什么是IOC/DI？</h4><p><code>IOC</code>即<code>Inversion of Control</code>英文缩写：控制反转，就是把原先我们代码里面需要实现的对象创建、依赖的代码，反转给容器来帮忙实现。那么必然的我们需要创建一个容器，同时需要一种描述来让容器知道需要创建的对象与对象的关系。这个描述最具体表现就是我们可配置的文件，比如xml，properties等配置文件</p>
+<p><code>DI</code>即<code>Dependency Injection</code>英文缩写：就是指对象是被动接受依赖类而不是自己主动去找，换句话说就是指对象不是从容器中查找它依赖的类，而是在容器实例化对象的时候主动将它依赖的类注入给它。</p>
+<a id="more"></a> 
+<p>####1.2 顶层接口BeanFactory</p>
+<p>Spring Bean是创建型的工厂模式，Spring IOC容器的实现复制，相互依赖关系如下图：</p>
+<p><img src="2018-09-01-死磕Spring之IOC容器实现原理/sp1.png" alt="类继承图"></p>
+<p>可以看到在Spring IOC容器实现中DefaultListableBeanFactory类实现了众多接口，而BeanFactory是Spring IOC容器的最顶层接口。为了更方便清晰的看到类继承关系，去除无关的类，简化后的图如下：</p>
+<p><img src="2018-09-01-死磕Spring之IOC容器实现原理/sp3.png" alt="Spring IOC实现图"></p>
+<p>​    其中<code>BeanFactory</code>作为最顶层的一个接口类，它定义了 <code>IOC</code>容器的基本功能规范，<code>BeanFactor</code> 有三个子类：<code>ListableBeanFactory</code>、<code>HierarchicalBeanFactory</code>和 <code>AutowireCapableBeanFactory</code>。但是从上图中我们可以发现最终的默认实现类是 <code>DefaultListableBeanFactory</code>，他实现了所有的接口。那为何要定义这么多层次的接口呢？查阅这些接口的源码和说明发现，  每个接口都有他使用的场合，它主要是为了区分在 Spring 内部在操作过程中对象的传递和转化过程中，对对象的数据访问所做的限制。例如<code>ListableBeanFactory</code>接口表示这些 Bean 是可列表的，而 <code>HierarchicalBeanFactory</code> 表示的是这些 Bean 是有继承关系的，也就是每个 Bean 有可能有父 Bean。<code>AutowireCapableBeanFactory</code>接口定义 Bean 的自动装配规则。这四个接口共同定义了 Bean 的集合、Bean 之间的关系、以及 Bean行为。</p>
+<p>####1.3 几种IOC容器</p>
+<p><code>BeanFactory</code>定义了对<code>IOC</code>容器的基本操作，并没有定义<code>IOC</code>容器如何产生的，工厂如何生成<code>Bean</code>的。<code>Spring IOC</code>容器具体实现比如：<code>ClasspathXmlApplicationContext</code>、<code>XmlBeanFactory</code>、<code>ApplicationContext</code>等。其中<code>XmlBeanFactory</code>是基本的容器，它可以读取<code>XML</code>文件定义的对<code>Bean</code>描述信息。<code>pplicationContext</code>是一个比较高级的容器，</p>
+<h4 id="2-1BeanDefinition"><a href="#2-1BeanDefinition" class="headerlink" title="2.1BeanDefinition"></a>2.1<code>BeanDefinition</code></h4><p>​    Spring容器启动的过程中，会将Bean解析成Spring内部的<code>beanDefinition</code>结构，BeanDefinition用来描述Spring Bean对象之间的关系。</p>
+<h3 id="2-Spring-IOC初始化流程"><a href="#2-Spring-IOC初始化流程" class="headerlink" title="2.Spring IOC初始化流程"></a>2.Spring IOC初始化流程</h3><p>####2.1从<code>ClassPathXmlApplicationContext</code>来查看初始化流程</p>
+<p>下面我们来看看Spring IOC容器是如何完成初始化的。首先通过<code>ClassPathXmlApplicationContext</code>来获取配置文件</p>
+<pre><code class="java">    public static void main(String[] args) {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(&quot;application.xml&quot;);
+        Object obj = context.getBean(&quot;user&quot;);
+    }
+</code></pre>
+<p>跟进<code>ClassPathXmlApplicationContext</code>查看源码内容，发现调用了重载的构造器方法，继续点击下去</p>
+<pre><code class="java">    public ClassPathXmlApplicationContext(String configLocation) throws BeansException{
+        this(new String[] {configLocation}, true, null);
+    }
+    /**
+     * Create a new ClassPathXmlApplicationContext with the given parent,
+     * loading the definitions from the given XML files.
+     * @param configLocations array of resource locations
+     * @param refresh whether to automatically refresh the context,
+     * loading all bean definitions and creating all singletons.
+     * Alternatively, call refresh manually after further configuring the context.
+     * @param parent the parent context
+     * @throws BeansException if context creation failed
+     * @see #refresh()
+     *
+     * 把上面的注释用软件大意翻译下
+     * 使用给定的父类创建一个新的ClassPathXmlApplicationContext，从给定的XML文件加载定义。
+     * 加载所有bean定义并创建所有单例。或者，在进一步配置上下文之后手动调用refresh。
+     */
+    public ClassPathXmlApplicationContext(
+            String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
+            throws BeansException {
+        // 根据查看super()方法...
+        super(parent);
+        setConfigLocations(configLocations);
+        if (refresh) {
+            // 初始化IOC容器的关键方法
+            refresh();
+        }
+    }
+</code></pre>
+<p>你会发现多次调用父类方法，层次很深，继承图如下：</p>
+<p><img src="2018-09-01-死磕Spring之IOC容器实现原理\sp6.png" alt="初始化IOC容器2.1"></p>
+<p><code>查看</code>AbstractApplicationContext<code>类，可以看到</code>AbstractApplicationContext<code>继承了DefaultResourceLoader</code>，所以他也是个资源加载器，用于读取配置文件。</p>
+<pre><code class="java">public abstract class AbstractApplicationContext extends DefaultResourceLoader
+        implements ConfigurableApplicationContext {    
+    /**
+     * Create a new AbstractApplicationContext with no parent.
+     * AbstractApplicationContext构造方法中调用PathMatchingResourcePatternResolver的构造方         * 法创建Spring资源加载器
+     */
+    public AbstractApplicationContext() {
+        this.resourcePatternResolver = getResourcePatternResolver();
+    }
+
+    /**
+    * 返回ResourcePatternResolver，用于将位置模式解析到资源实例中。默认是
+    * org.springframework.core.io.support.PathMatchingResourcePatternResolver
+    * 支持ant风格的位置模式的路径匹配
+    */
+    // ResourcePatternResolver接口继承自ResourceLoader接口，主要定义了getResource()方法。
+    protected ResourcePatternResolver getResourcePatternResolver() {
+        return new PathMatchingResourcePatternResolver(this);
+    }
+
+}    
+
+</code></pre>
+<p>下面着重看看refresh()方法</p>
+<pre><code class="java">public abstract class AbstractApplicationContext extends DefaultResourceLoader
+implements ConfigurableApplicationContext {
+
+    /**
+    * 看到refresh（）方法感觉有点方，里面调用了许多方法，什么前置刷新后置刷新等等，
+    * 但你有没有注意到beanFactory，就是他了。因为我们就是要找加载容器工厂bean，这个方法告诉子类启动    * refreshBeanFactory()方法，
+    */
+    @Override
+    public void refresh() throws BeansException, IllegalStateException {
+        synchronized (this.startupShutdownMonitor) {
+
+            //告诉子类启动refreshBeanFactory()方法
+            ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+
+        }
+    }
+
+
+}
+</code></pre>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/31/Elasticsearch之查询原理/" rel="next" title="Elasticsearch之查询原理">
+                <i class="fa fa-chevron-left"></i> Elasticsearch之查询原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/02/Hadoop学习之路基础入门/" rel="prev" title="Hadoop学习之路基础入门">
+                Hadoop学习之路基础入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/upload/image/head.jpg" alt="William">
+            
+              <p class="site-author-name" itemprop="name">William</p>
+              <p class="site-description motion-element" itemprop="description">你不笨，只是你很懒。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Spring-IOC容器"><span class="nav-number">1.</span> <span class="nav-text">1. Spring IOC容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-什么是IOC-DI？"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 什么是IOC/DI？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1BeanDefinition"><span class="nav-number">1.2.</span> <span class="nav-text">2.1BeanDefinition</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Spring-IOC初始化流程"><span class="nav-number">2.</span> <span class="nav-text">2.Spring IOC初始化流程</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">William</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

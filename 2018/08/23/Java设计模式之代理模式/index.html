@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,parttern,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="一个人的独奏" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="Java设计模式之代理模式">
+<meta name="keywords" content="java,parttern">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java设计模式之代理模式">
+<meta property="og:url" content="http://yoursite.com/2018/08/23/Java设计模式之代理模式/index.html">
+<meta property="og:site_name" content="一个人的独奏">
+<meta property="og:description" content="Java设计模式之代理模式">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-21T08:12:03.356Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java设计模式之代理模式">
+<meta name="twitter:description" content="Java设计模式之代理模式">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/08/23/Java设计模式之代理模式/">
+
+
+
+
+
+  <title>Java设计模式之代理模式 | 一个人的独奏</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+  
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/WilliamDream"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个人的独奏</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/23/Java设计模式之代理模式/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java设计模式之代理模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-23T20:51:01+08:00">
+                2018-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/parttern/" itemprop="url" rel="index">
+                    <span itemprop="name">parttern</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Java设计模式之代理模式"><a href="#Java设计模式之代理模式" class="headerlink" title="Java设计模式之代理模式"></a>Java设计模式之代理模式</h2><a id="more"></a> 
+<h3 id="1、JDK动态代理"><a href="#1、JDK动态代理" class="headerlink" title="1、JDK动态代理"></a>1、JDK动态代理</h3><pre><code class="java">/**
+ * 接口类
+ */
+public interface IMan {
+
+    public void findGirlFriend();
+
+}
+/**
+ * 被代理目标对象，实现接口类
+ */
+public class SingleDog implements IMan{
+
+    @Override
+    public void findGirlFriend() {
+        System.out.println(&quot;me:别看我是个矮穷矬，但是我想找个肤白貌美大长腿，内外兼修气质佳的女朋友!!!&quot;);
+    }
+
+}
+</code></pre>
+<pre><code class="java">import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+/**
+ * @author: william
+ * @Description: 代理类---珍爱网
+ */
+public class ZhenAiWang implements InvocationHandler{
+
+    private Object target;
+
+
+    public Object getInstance(Object target) throws Exception{
+        this.target = target;
+        Class&lt;?&gt; clazz = target.getClass();
+        // 返回指定接口的代理类的实例
+        return Proxy.newProxyInstance(clazz.getClassLoader(),clazz.getInterfaces(),this);
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        // doSomething()
+        System.out.println(&quot;before:先生您好！我是珍爱网红娘飘飘，请问你想找什么类型的女朋友呢？&quot;);
+        method.invoke(this.target,args);
+        System.out.println(&quot;after:屌丝，你怕是还没睡醒吧，滚犊子!!!&quot;);
+        return null;
+    }
+
+}
+</code></pre>
+<pre><code class="java">/**
+ * jdk动态代理测试
+ */
+public class JdkDynamicProxyTest {
+
+    public static void main(String[] args) {
+        try {
+            IMan signleDog = (IMan) new ZhenAiWang().getInstance(new SingleDog());
+            signleDog.findGirlFriend();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+/**
+ * 测试打印结果：
+ * before:先生您好！我是珍爱网红娘飘飘，请问你想找什么类型的女朋友呢？
+ * me:别看我是个矮穷矬，但是我想找个肤白貌美大长腿，内外兼修气质佳的女朋友!!!
+ * after:屌丝，你怕是还没睡醒吧，滚犊子!!!
+ */
+</code></pre>
+<h3 id="2、字节码重组实现动态代理"><a href="#2、字节码重组实现动态代理" class="headerlink" title="2、字节码重组实现动态代理"></a>2、字节码重组实现动态代理</h3><p>我们已经知道，jdk动态代理是动态的生成一个代理对象的子类来实现的。下面我们通过字节码重组的方式来实现动态代理。</p>
+<h4 id="1-代码实现"><a href="#1-代码实现" class="headerlink" title="1.代码实现"></a>1.代码实现</h4><pre><code class="java">/**
+ * @author: william
+ * @Description: 类加载器
+ */
+public class MyClassLoader extends ClassLoader{
+
+    private File file;
+
+    public MyClassLoader() {
+        String classPath = MyClassLoader.class.getResource(&quot;&quot;).getPath();
+        this.file = new File(classPath);
+    }
+
+    protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException {
+        String className = MyClassLoader.class.getPackage().getName() +&quot;.&quot;+name;
+        if(file != null) {
+            File classFile = new File(file, name.replace(&quot;\\./&quot;, &quot;/&quot;)+&quot;.class&quot;);
+            if(classFile.exists()) {
+                FileInputStream in = null;
+                ByteArrayOutputStream out = null;
+
+                try {
+                    in = new FileInputStream(classFile);
+                    out = new ByteArrayOutputStream();
+                    byte[] buf = new byte[1024];
+                    int len;
+                    while((len = in.read(buf)) != -1) {
+                        out.write(buf,0,len);
+                    }
+                    return defineClass(className,out.toByteArray(),0,out.size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if(null != in){
+                        try {
+                            in.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if(out != null){
+                        try {
+                            out.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+            }
+        }
+        return null;
+    }
+
+
+}
+</code></pre>
+<pre><code class="java">import java.io.File;
+import java.io.FileWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
+import javax.tools.JavaCompiler;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+
+/**
+ * @author: chaiz
+ * @Description: 自己的代理类，用于生成java对象并编译加载到jvm中
+ */
+public class MyProxy {
+
+    public static final String ln = &quot;\r\n&quot;;
+
+    @SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+    public static Object newProxyInstance(MyClassLoader classLoader,Class&lt;?&gt; [] interfaces,MyInvocationHandler h) {
+        try {
+            // 1.动态生成源代码java文件
+            String javaStr = getJavaStr(interfaces);
+
+            // 2.将java文件输出到磁盘
+            String filePath = MyProxy.class.getResource(&quot;&quot;).getPath();
+            File javaFile = new File(filePath + &quot;$Proxy0.java&quot;);
+            FileWriter fw = new FileWriter(javaFile);
+            fw.write(javaStr);
+            fw.flush();
+            fw.close();
+
+            // 3.将java文件编译为class文件
+            JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
+            StandardJavaFileManager manager = jc.getStandardFileManager(null, null, null);
+            Iterable iterable = manager.getJavaFileObjects(javaFile);
+            JavaCompiler.CompilationTask task = jc.getTask(null, manager, null, null, null, iterable);
+            task.call();
+            manager.close();
+
+            // 4.将class文件加载到JVM中
+            Class proxyClass =  classLoader.findClass(&quot;$Proxy0&quot;);
+            Constructor c = proxyClass.getConstructor(MyInvocationHandler.class);
+            //删除生成的java类
+            javaFile.delete();
+
+            // 5.返回字节码重组后生成的代理对象
+            return c.newInstance(h);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * @Title: getJavaStr
+     * @Description: 自己拼接一个java文件，原本是有代理生成的对象
+     * @param interfaces
+     * @return
+     */
+    public static String getJavaStr(Class&lt;?&gt;[] interfaces) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(&quot;package imcomp.classproxy; &quot; + ln);
+        sb.append(&quot;import imcomp.classproxy.IMan; &quot; + ln);
+        sb.append(&quot;import java.lang.reflect.Method; &quot; + ln);
+        sb.append(&quot;public class $Proxy0 implements &quot; + interfaces[0].getName() + &quot;{&quot; + ln );
+            sb.append(&quot;MyInvocationHandler h; &quot; + ln );
+
+            sb.append(&quot;public $Proxy0(MyInvocationHandler h) { &quot;);
+                sb.append(&quot;this.h = h;&quot; + ln);
+            sb.append(&quot;} &quot; + ln);
+            for (Method m : interfaces[0].getMethods()){
+                sb.append(&quot;public &quot; + m.getReturnType().getName() + &quot; &quot; + m.getName() + &quot;() {&quot; + ln);
+                    sb.append(&quot;try{&quot; + ln);
+                        sb.append(&quot;Method m = &quot; + interfaces[0].getName() + &quot;.class.getMethod(\&quot;&quot; + m.getName() + &quot;\&quot;,new Class[]{});&quot; + ln);
+                        sb.append(&quot;this.h.invoke(this,m,null);&quot; + ln);
+                    sb.append(&quot;}catch(Throwable e){&quot; + ln);
+                        sb.append(&quot;e.printStackTrace();&quot; + ln);
+                    sb.append(&quot;} &quot; + ln);
+                sb.append(&quot;} &quot; + ln);
+            }
+        sb.append(&quot;} &quot; + ln);
+
+        return sb.toString();
+    }
+
+}
+</code></pre>
+<pre><code class="java">import java.lang.reflect.Method;
+
+/**
+ * @author: william
+ * @Description: 编写模拟回调的动态代理类
+ */
+public interface MyInvocationHandler {
+
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable;
+}
+</code></pre>
+<pre><code class="java">/**
+ * @author: chaiz
+ * @Description: 代理类---珍爱网
+ */
+public class ZhenAiWang implements MyInvocationHandler{
+
+    private IMan target;
+
+
+    public Object getInstance(IMan target) throws Exception{
+        this.target = target;
+        Class&lt;?&gt; clazz = target.getClass();
+        // 返回指定接口的代理类的实例
+        return MyProxy.newProxyInstance(new MyClassLoader(),clazz.getInterfaces(),this);
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+        System.out.println(&quot;before:先生您好！我是珍爱网红娘飘飘，请问你想找什么类型的女朋友呢？&quot;);
+        method.invoke(target, args);
+        System.out.println(&quot;after:屌丝，你怕是还没睡醒吧，滚犊子!!!&quot;);
+        return null;
+    }
+
+}
+</code></pre>
+<h4 id="2-原理分析"><a href="#2-原理分析" class="headerlink" title="2.原理分析"></a>2.原理分析</h4><h3 id="3、cglib动态代理"><a href="#3、cglib动态代理" class="headerlink" title="3、cglib动态代理"></a>3、cglib动态代理</h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/parttern/" rel="tag"># parttern</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/21/Elasticsearch之集群环境搭建/" rel="next" title="Elasticsearch之集群环境搭建">
+                <i class="fa fa-chevron-left"></i> Elasticsearch之集群环境搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/25/Java设计模式之委派模式/" rel="prev" title="Java设计模式之委派模式">
+                Java设计模式之委派模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/upload/image/head.jpg" alt="William">
+            
+              <p class="site-author-name" itemprop="name">William</p>
+              <p class="site-description motion-element" itemprop="description">你不笨，只是你很懒。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java设计模式之代理模式"><span class="nav-number">1.</span> <span class="nav-text">Java设计模式之代理模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、JDK动态代理"><span class="nav-number">1.1.</span> <span class="nav-text">1、JDK动态代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、字节码重组实现动态代理"><span class="nav-number">1.2.</span> <span class="nav-text">2、字节码重组实现动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-代码实现"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.代码实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-原理分析"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.原理分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、cglib动态代理"><span class="nav-number">1.3.</span> <span class="nav-text">3、cglib动态代理</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">William</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="elasticsearch,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="一个人的独奏" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="Elasticsearch之集群环境搭建1、了解elaticsearch Elasticsearch 是一个高度可扩展的开源全文搜索和分析引擎。它允许您快速且接近实时地存储、搜索和分析大量数据。它通常被用作基础的引擎/技术，为具有复杂搜索特性和需求的应用程序提供动力。Elasticsearch是一个基于Lucene的开源搜索引擎。Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引">
+<meta name="keywords" content="elasticsearch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elasticsearch之集群环境搭建">
+<meta property="og:url" content="http://yoursite.com/2018/08/21/Elasticsearch之集群环境搭建/index.html">
+<meta property="og:site_name" content="一个人的独奏">
+<meta property="og:description" content="Elasticsearch之集群环境搭建1、了解elaticsearch Elasticsearch 是一个高度可扩展的开源全文搜索和分析引擎。它允许您快速且接近实时地存储、搜索和分析大量数据。它通常被用作基础的引擎/技术，为具有复杂搜索特性和需求的应用程序提供动力。Elasticsearch是一个基于Lucene的开源搜索引擎。Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-12-07T09:43:08.307Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Elasticsearch之集群环境搭建">
+<meta name="twitter:description" content="Elasticsearch之集群环境搭建1、了解elaticsearch Elasticsearch 是一个高度可扩展的开源全文搜索和分析引擎。它允许您快速且接近实时地存储、搜索和分析大量数据。它通常被用作基础的引擎/技术，为具有复杂搜索特性和需求的应用程序提供动力。Elasticsearch是一个基于Lucene的开源搜索引擎。Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/08/21/Elasticsearch之集群环境搭建/">
+
+
+
+
+
+  <title>Elasticsearch之集群环境搭建 | 一个人的独奏</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+  
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/WilliamDream"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个人的独奏</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/21/Elasticsearch之集群环境搭建/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Elasticsearch之集群环境搭建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-21T19:49:11+08:00">
+                2018-08-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index">
+                    <span itemprop="name">elasticsearch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Elasticsearch之集群环境搭建"><a href="#Elasticsearch之集群环境搭建" class="headerlink" title="Elasticsearch之集群环境搭建"></a>Elasticsearch之集群环境搭建</h3><h4 id="1、了解elaticsearch"><a href="#1、了解elaticsearch" class="headerlink" title="1、了解elaticsearch"></a>1、了解elaticsearch</h4><p> <a href="https://www.elastic.co/products/elasticsearch" target="_blank" rel="noopener">Elasticsearch</a> 是一个高度可扩展的开源全文搜索和分析引擎。它允许您快速且接近实时地存储、搜索和分析大量数据。它通常被用作基础的引擎/技术，为具有复杂搜索特性和需求的应用程序提供动力。<code>Elasticsearch</code>是一个基于<a href="https://lucene.apache.org/core/" target="_blank" rel="noopener">Lucene</a>的开源搜索引擎。<code>Lucene</code>可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引擎库。但是，<code>Lucene</code>只是一个库，<code>Elasticsearch</code>也使用Java开发并使用<code>Lucene</code>作为其核心来实现所有索引和搜索的功能，但是它的目的是通过简单的<code>RESTful API</code>来隐藏<code>Lucene</code>的复杂性，从而让全文搜索变得简单。</p>
+<h4 id="2、集群环境搭建"><a href="#2、集群环境搭建" class="headerlink" title="2、集群环境搭建"></a>2、集群环境搭建</h4><h5 id="1-下载elasticsearch"><a href="#1-下载elasticsearch" class="headerlink" title="(1) 下载elasticsearch"></a>(1) 下载elasticsearch</h5><p>传送门：<a href="https://www.elastic.co/downloads/elasticsearch" target="_blank" rel="noopener">点击下载elasticsearch</a></p>
+<a id="more"></a> 
+<h5 id="2-配置elasticsearch-yml"><a href="#2-配置elasticsearch-yml" class="headerlink" title="(2) 配置elasticsearch.yml"></a>(2) 配置elasticsearch.yml</h5><p><code>192.169.2.98</code>配置</p>
+<pre><code class="yaml">cluster.name: bigData-cluster
+node.name: data01
+path.data: /home/elastic/6.3.0/data
+path.logs: /home/elastic/6.3.0/logs
+network.host: 0.0.0.0
+network.publish_host: 192.169.2.98
+transport.tcp.port: 9300
+http.port: 9200
+discovery.zen.ping.unicast.hosts: [&quot;192.169.2.98:9300&quot;,&quot;192.169.2.188:9300&quot;,&quot;192.169.2.156:9300&quot;]
+node.master: true 
+node.data: false
+discovery.zen.minimum_master_nodes: 1
+</code></pre>
+<p><code>192.169.2.156</code>配置</p>
+<pre><code class="yaml">cluster.name: bigData-cluster
+node.name: data03
+path.data: /home/elastic/6.3.0/data
+path.logs: /home/elastic/6.3.0/logs
+network.host: 0.0.0.0
+network.publish_host: 192.169.2.156
+transport.tcp.port: 9300
+http.port: 9200
+discovery.zen.ping.unicast.hosts: [&quot;192.169.2.98:9300&quot;,&quot;192.169.2.188:9300&quot;,&quot;192.169.2.156:9300&quot;]
+node.master: false
+node.data: true
+discovery.zen.minimum_master_nodes: 1
+</code></pre>
+<h4 id="3、安装可视化工具kibana"><a href="#3、安装可视化工具kibana" class="headerlink" title="3、安装可视化工具kibana"></a>3、安装可视化工具kibana</h4><h4 id="4、扩容"><a href="#4、扩容" class="headerlink" title="4、扩容"></a>4、扩容</h4><p>#####(1) 垂直扩容</p>
+<p>简单来说，用容量更大，性能更好的服务器替换原有的节点。</p>
+<p>#####(2) 水平扩容</p>
+<p>方式一代价比较大，一般会选择水平扩容，ES集群具备集群发现机制，当有节点加入，ES集群会自动对各个shard进行均衡分配</p>
+<p>思考：</p>
+<p>当有3台机器组成的集群，主分片数为3，副本分片数也为3。当增加节点数能否增加索引的数据容量？当增加副本数是否可以增大吞吐量？</p>
+<p>回答：</p>
+<p>不能，理由是只有3个分片已经分布到3个节点上了，新加入的节点也无法利用。副本也是分布在3个节点了，要增加吞吐量需要增加节点。故而<strong><em>在创建索引时设定分片数尤为重要，一旦分片数确定就不能更改，分片数太少导致后续无法通过增加节点来实现水平扩容，分片数过大导致一个节点分布多个分片，也会影响查询性能。</em></strong></p>
+<h4 id="5、故障转移"><a href="#5、故障转移" class="headerlink" title="5、故障转移"></a>5、故障转移</h4><p>当ES集群中有节点宕机，如何是主节点宕机，ES集群会重新进行选举</p>
+<h4 id="6、脑裂问题"><a href="#6、脑裂问题" class="headerlink" title="6、脑裂问题"></a>6、脑裂问题</h4>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/elasticsearch/" rel="tag"># elasticsearch</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/18/Spring-Boot整合Security安全框架实现登录认证之一/" rel="next" title="Security安全框架之登录认证">
+                <i class="fa fa-chevron-left"></i> Security安全框架之登录认证
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/23/Java设计模式之代理模式/" rel="prev" title="Java设计模式之代理模式">
+                Java设计模式之代理模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/upload/image/head.jpg" alt="William">
+            
+              <p class="site-author-name" itemprop="name">William</p>
+              <p class="site-description motion-element" itemprop="description">你不笨，只是你很懒。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Elasticsearch之集群环境搭建"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch之集群环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、了解elaticsearch"><span class="nav-number">1.1.</span> <span class="nav-text">1、了解elaticsearch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、集群环境搭建"><span class="nav-number">1.2.</span> <span class="nav-text">2、集群环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-下载elasticsearch"><span class="nav-number">1.2.1.</span> <span class="nav-text">(1) 下载elasticsearch</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-配置elasticsearch-yml"><span class="nav-number">1.2.2.</span> <span class="nav-text">(2) 配置elasticsearch.yml</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、安装可视化工具kibana"><span class="nav-number">1.3.</span> <span class="nav-text">3、安装可视化工具kibana</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、扩容"><span class="nav-number">1.4.</span> <span class="nav-text">4、扩容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、故障转移"><span class="nav-number">1.5.</span> <span class="nav-text">5、故障转移</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6、脑裂问题"><span class="nav-number">1.6.</span> <span class="nav-text">6、脑裂问题</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">William</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

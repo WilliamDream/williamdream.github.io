@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>一个人的独奏</title>
+  
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yoursite.com/"/>
+  <updated>2019-03-12T14:00:55.919Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name>William</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>SpringCloud学习之路配置管理</title>
+    <link href="http://yoursite.com/2019/03/12/SpringCloud%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86/"/>
+    <id>http://yoursite.com/2019/03/12/SpringCloud学习之路配置管理/</id>
+    <published>2019-03-12T14:00:55.000Z</published>
+    <updated>2019-03-12T14:00:55.919Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title></title>
+    <link href="http://yoursite.com/2019/03/09/Java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AF%87/"/>
+    <id>http://yoursite.com/2019/03/09/Java设计模式总结篇/</id>
+    <published>2019-03-08T16:00:00.000Z</published>
+    <updated>2019-03-06T13:43:59.598Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h4><ol><li><p>单一职责原则</p><p>一个类，只有一个引起它变化的原因。应该只有一个职责。每一个职责都是变化的一个轴线，如果一个类有一个以上的职责，这些职责就耦合在了一起。这会导致脆弱的设计。当一个职责发生变化时，可能会影响其它的职责。另外，多个职责耦合在一起，会影响复用性。</p></li><li><p>开闭原则</p><p>开闭原则就是说<strong>对扩展开放，对修改关闭</strong>。在程序需要进行拓展的时候，不能去修改原有的代码，实现一个热插拔的效果。所以一句话概括就是：为了使程序的扩展性好，易于维护和升级。想要达到这样的效果，我们需要使用接口和抽象类，后面的具体设计中我们会提到这点。</p></li><li><p>里氏代换原则</p><p>​</p></li><li><p>依赖倒转原则</p><p>​</p></li><li><p>接口隔离原则</p><p>​</p></li><li><p>合成复用原则</p><p>​</p></li><li><p>迪米特法则</p></li></ol><h4 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h4><ol><li><p>策略模式</p><p>策略模式就是定义了算法族，分别封装起来，让他们之前可以互相转换，本模式使得算法可独立于使用它的客户而变化。虽然策略模式定义了算法，但是它并不提供算法的选择，对于策略的选择还是要客户端来做。策略模式非常完美的符合了“开闭原则”</p></li><li><p>模板模式</p></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h4 id=&quot;设计原则&quot;&gt;&lt;a href=&quot;#设计原则&quot; class=&quot;headerlink&quot; title=&quot;设计原则&quot;&gt;&lt;/a&gt;设计原则&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;单一职责原则&lt;/p&gt;
+&lt;p&gt;一个类，只有一个引起它变化的原因。应该只有一个职责。每一个职责都是变化的一个轴
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Elasticsearch聚合查询之一简单聚合</title>
+    <link href="http://yoursite.com/2019/02/28/Elasticsearch%E8%81%9A%E5%90%88%E6%9F%A5%E8%AF%A2%E4%B9%8B%E4%B8%80%E7%AE%80%E5%8D%95%E8%81%9A%E5%90%88/"/>
+    <id>http://yoursite.com/2019/02/28/Elasticsearch聚合查询之一简单聚合/</id>
+    <published>2019-02-28T06:24:20.000Z</published>
+    <updated>2019-02-28T09:21:14.340Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Elasticsearch聚合查询之一简单聚合"><a href="#Elasticsearch聚合查询之一简单聚合" class="headerlink" title="Elasticsearch聚合查询之一简单聚合"></a>Elasticsearch聚合查询之一简单聚合</h3><h4 id="1-聚合查询分类"><a href="#1-聚合查询分类" class="headerlink" title="1. 聚合查询分类"></a>1. 聚合查询分类</h4><ul><li>简单聚合</li><li>复杂聚合</li><li>过滤聚合</li><li>多桶排序</li><li>近似聚合</li></ul><h4 id="2-简单聚合"><a href="#2-简单聚合" class="headerlink" title="2. 简单聚合"></a>2. 简单聚合</h4><h5 id="2-1-统计平均值"><a href="#2-1-统计平均值" class="headerlink" title="2.1 统计平均值"></a>2.1 统计平均值</h5><pre><code class="json"># 统计所有书籍的平均价格GET /library/books/_search{    &quot;size&quot;:0,    &quot;aggregations&quot;:{        &quot;avg_price&quot;:{            &quot;avg&quot;:{                &quot;field&quot;:&quot;price&quot;            }        }    }}# 根据书籍不同类别分组统计每个版本的平均价格# select type,avg(pirce) from books group by typeGET /library/books/_search{    &quot;size&quot;:0,    &quot;aggs&quot;:{        &quot;genders&quot;:{            &quot;terms&quot;:{                &quot;field&quot;:&quot;type&quot;            },            &quot;aggs&quot;:{                &quot;avg_price&quot;:{                    &quot;avg&quot;:{                        &quot;field&quot;:&quot;pirce&quot;                    }                }            }        }    }}</code></pre><h5 id="2-2-统计最大值与最小值"><a href="#2-2-统计最大值与最小值" class="headerlink" title="2.2 统计最大值与最小值"></a>2.2 统计最大值与最小值</h5><pre><code class="json">GET /library/books/_search{  &quot;size&quot;:0,    &quot;aggregations&quot;:{        &quot;min_price&quot;:{            &quot;min&quot;:{                &quot;field&quot;:&quot;price&quot;            }        },        &quot;max_price&quot;:{            &quot;max&quot;:{                &quot;field&quot;:&quot;price&quot;            }        }    }}</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Elasticsearch聚合查询之一简单聚合&quot;&gt;&lt;a href=&quot;#Elasticsearch聚合查询之一简单聚合&quot; class=&quot;headerlink&quot; title=&quot;Elasticsearch聚合查询之一简单聚合&quot;&gt;&lt;/a&gt;Elasticsearch聚合查询
+      
+    
+    </summary>
+    
+      <category term="elasticsearch" scheme="http://yoursite.com/categories/elasticsearch/"/>
+    
+    
+      <category term="elasticsearch" scheme="http://yoursite.com/tags/elasticsearch/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java基础之HashMap原理分析</title>
+    <link href="http://yoursite.com/2019/02/25/Java%E5%9F%BA%E7%A1%80%E4%B9%8BHashMap%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/"/>
+    <id>http://yoursite.com/2019/02/25/Java基础之HashMap原理分析/</id>
+    <published>2019-02-25T04:55:02.000Z</published>
+    <updated>2019-03-12T13:54:31.518Z</updated>
+    
+    <content type="html"><![CDATA[<p>###1. HashMap实现</p><p>HashMap是大家平时开发中最常用的容器之一，相信大家已经很熟悉了。下面聊聊HashMap的实现，大牛请跳过。</p><p>####1.1 数据结构</p><p><code>HashMap</code>是由数组+链表以及红黑树组成，我们常把数组中的每一个节点称为一个<strong>桶</strong>。当向桶中添加一个键值对时，首先计算键值对中key的hash值，以此确定插入数组中的位置，但是可能存在同一hash值的元素已经被放在数组同一位置了，这种现象称为<strong>碰撞</strong>，这时按照尾插法(jdk1.7及以前为头插法)的方式添加key-value到同一hash值的元素的后面，链表就这样形成了。当链表长度超过8(TREEIFY_THRESHOLD)时，链表就转换为红黑树。</p><p>###2. HashMap源码分析</p><p>####2.1 静态变量定义</p><pre><code class="java">    /**     * 默认初始化容量，值为16，必须是2的n次幂，继续往下看看为什么是2的n次幂吧。     */    static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4; // aka 16    /**     * 最大容量, 容量不能超出这个值。     */    static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;    /**     * 默认的加载因子。     */    static final float DEFAULT_LOAD_FACTOR = 0.75f;    /**     * 将链表转化为红黑树的阈值。     * 当添加一个元素被添加到有至少TREEIFY_THRESHOLD个节点的桶中，     * 桶中链表将被转化为树形结构。     */    static final int TREEIFY_THRESHOLD = 8;    /**     *  恢复成链式结构的桶大小阈值。     * 当桶中元素不大于UNTREEIFY_THRESHOLD时，将由红黑树转化为链表结构，     */    static final int UNTREEIFY_THRESHOLD = 6;    /**     * 桶可能被转化为树形结构的最小容量。当哈希表的大小超过这个阈值，才会把链式结构转化成树型结构，否则         * 仅采取扩容来尝试减少冲突。      * 应该至少4*TREEIFY_THRESHOLD来避免扩容和树形结构化之间的冲突。     */    static final int MIN_TREEIFY_CAPACITY = 64;</code></pre><p>####2.2 put关键方法</p><pre><code class="java">public V put(K key, V value) {    return putVal(hash(key), key, value, false, true);}/** * 获取hash值 */static final int hash(Object key) {    int h;    return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);}</code></pre><p><strong>说明：</strong>从源码中可以看出，<code>put()</code>方法主要分为以下两步</p><ul><li><code>hash()</code>方法计算出hash值；</li><li><code>putVal()</code>方法设置值实现功能。</li></ul><p>#####2.2.1 hash方法</p><ul><li><code>key.hashCode()</code>:第一步获取到hash值；</li><li>key的<code>hashCode</code>向右移16位，然后高16位与低16位进行异或运算；</li></ul><p><strong>注意:</strong>这里为什么key的<code>hashCode</code>要向右移16位然后进行异或运算?</p><p>先看看要落入的节点位置是如何确定的</p><pre><code class="java">if ((p = tab[i = (n - 1) &amp; hash]) == null)            tab[i] = newNode(hash, key, value, null);</code></pre><p>其中<code>i=(n-1)&amp;hash</code>就可以确定元素要落入的桶位置。即哈希值和数组容量值-1进行与运算。初始n为16。我们当然期望元素落入桶的位置尽可能均衡。n-1=15，二进制表示<code>01111</code>，它直接与<code>key.hashCode()</code>相与，实际上低四位就决定元素落入桶的 位置，为了让高位也参与进来，所以把高16位向右移16位，然后与低16位做异或运算。这样尽可能让元素的落点均衡。这也是为什么要求Hashmap容量必须是2的n次幂。</p><h5 id="2-2-2putVal方法"><a href="#2-2-2putVal方法" class="headerlink" title="2.2.2putVal方法"></a>2.2.2putVal方法</h5><pre><code class="java">    /**     * Implements Map.put and related methods     *     * @param hash hash for key     * @param key the key     * @param value the value to put     * @param onlyIfAbsent if true, don&#39;t change existing value     * @param evict if false, the table is in creation mode.     * @return previous value, or null if none     */    final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;         //如果哈希表为空，调用resize()创建一个哈希表        if ((tab = table) == null || (n = tab.length) == 0)            n = (tab = resize()).length;        //如果指定参数hash在表中没有对应的桶，即为没有碰撞        if ((p = tab[i = (n - 1) &amp; hash]) == null)            //直接将元素插入map中            tab[i] = newNode(hash, key, value, null);        else {                //发生碰撞时，分为三种情况：1.第一个节点就匹配到            Node&lt;K,V&gt; e; K k;             //如果碰撞了，且桶中的第一个节点就匹配到了            if (p.hash == hash &amp;&amp;                ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))                e = p;            else if (p instanceof TreeNode) // 如果是红黑树形结构                e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);            else {  //如果是链表结构                for (int binCount = 0; ; ++binCount) {                    if ((e = p.next) == null) {    // 如果是链表结尾，插入到尾部                        p.next = newNode(hash, key, value, null);                        //如果链表长度达到阈值TREEIFY_THRESHOLD，则把链表变为红黑树                        if (binCount &gt;= TREEIFY_THRESHOLD - 1)                            treeifyBin(tab, hash);                        break;                    }                    // 如果key的hash和key都相等，说明找到了已存在的key,则直接跳出循环。                    if (e.hash == hash &amp;&amp;                        ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))                        break;                    // 用于遍历链表，与循环条件e = p.next；相呼应                    p = e;                }            }            //            if (e != null) { // existing mapping for key                V oldValue = e.value;                if (!onlyIfAbsent || oldValue == null)                    e.value = value;                afterNodeAccess(e);                return oldValue;            }        }        ++modCount;        if (++size &gt; threshold)            resize();        afterNodeInsertion(evict);        return null;    }</code></pre><p>putVal方法处理逻辑如下：</p><ul><li><p>判断哈希表是否为空，为空就调用resize创建一个；</p></li><li><p>根据tab[i = (n - 1) &amp; hash]找到对应桶的位置；</p></li><li><p>如果没有发生碰撞就直接插入，如果发生碰撞了，就遍历桶找到Key的映射</p><ul><li>如果桶的第一个节点就找到了，就将第一个节点记录到临时对象中；</li><li>如果第一个节点没有匹配到，且为红黑树结构，则调用红黑树对应的方法插入键值对；</li><li>如果是链表结构，则遍历链表，找key的映射。如果没找到，就将键值对插入链表尾部，如果链表长度达到阈值就转换为红黑树；如果找到了，就将节点记录到临时对象中，退出循环。</li></ul></li><li><p>如果找到了key的映射节点，说明已经存在。记录节点的vlaue，如果参数onlyIfAbsent为false，或者oldValue为null，替换value，否则不替换。返回记录下节点的value。</p></li><li><p>如果没有找到Key的映射节点，说明已经插入，size加1，并判断是否达到扩容值。</p><p>​</p><p>​</p></li></ul><h5 id="2-2-3-treeifyBin方法"><a href="#2-2-3-treeifyBin方法" class="headerlink" title="2.2.3 treeifyBin方法"></a>2.2.3 treeifyBin方法</h5><p>当链表长度大于阈值8时会将链表转换为红黑树结构。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;###1. HashMap实现&lt;/p&gt;
+&lt;p&gt;HashMap是大家平时开发中最常用的容器之一，相信大家已经很熟悉了。下面聊聊HashMap的实现，大牛请跳过。&lt;/p&gt;
+&lt;p&gt;####1.1 数据结构&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;HashMap&lt;/code&gt;是由数组+链表以及红
+      
+    
+    </summary>
+    
+      <category term="java" scheme="http://yoursite.com/categories/java/"/>
+    
+    
+      <category term="java" scheme="http://yoursite.com/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>并发编程之重排序</title>
+    <link href="http://yoursite.com/2019/02/22/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E4%B9%8B%E9%87%8D%E6%8E%92%E5%BA%8F/"/>
+    <id>http://yoursite.com/2019/02/22/并发编程之重排序/</id>
+    <published>2019-02-22T10:03:09.000Z</published>
+    <updated>2019-02-22T10:03:09.548Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Elasticsearch检索DSL语句之match query</title>
+    <link href="http://yoursite.com/2019/02/19/Elasticsearch%E6%A3%80%E7%B4%A2DSL%E8%AF%AD%E5%8F%A5%E4%B9%8Bmatch-query/"/>
+    <id>http://yoursite.com/2019/02/19/Elasticsearch检索DSL语句之match-query/</id>
+    <published>2019-02-19T09:36:18.000Z</published>
+    <updated>2019-02-19T09:53:49.728Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Elasticsearch检索DSL语句之match-query"><a href="#Elasticsearch检索DSL语句之match-query" class="headerlink" title="Elasticsearch检索DSL语句之match query"></a>Elasticsearch检索DSL语句之match query</h3><h4 id="1-filter过滤器"><a href="#1-filter过滤器" class="headerlink" title="1. filter过滤器"></a>1. filter过滤器</h4><h5 id="1-1-query与filter比较"><a href="#1-1-query与filter比较" class="headerlink" title="1.1 query与filter比较"></a>1.1 query与filter比较</h5><p>查询DSL分为两种：一种是query DSL，一种是filter DSL。两种不同的上下文环境目的不同。</p><table><thead><tr><th style="text-align:center">query</th><th style="text-align:center">filter</th></tr></thead><tbody><tr><td style="text-align:center">relevance</td><td style="text-align:center">boolean  yes/no</td></tr><tr><td style="text-align:center">full text</td><td style="text-align:center">exact values</td></tr><tr><td style="text-align:center">not cached</td><td style="text-align:center">cached</td></tr><tr><td style="text-align:center">slower</td><td style="text-align:center">faster</td></tr></tbody></table><p><code>query</code>：不仅要进行full  text  search，还要进行相关性评分，更倾向检索文档的匹配程度。</p><p><code>filter</code>：主要进行精确查询过滤，对检索文档是否匹配。</p><p>触发<code>filter</code>上下文有三种条件：</p><ul><li><p>在bool查询中指定filter参数或者must_not参数；</p></li><li><p>在 constant_score查询中指定filter参数；</p></li><li><p>filter aggregation，即filter聚合查询；</p></li></ul><h4 id="2-match-all-query"><a href="#2-match-all-query" class="headerlink" title="2. match all query"></a>2. match all query</h4><h5 id="2-1-match-all"><a href="#2-1-match-all" class="headerlink" title="2.1 match_all"></a>2.1 match_all</h5><pre><code class="json">GET /library/books/_search{    &quot;query&quot;: {        &quot;match_all&quot;: {}    }}#设置评分 boostGET /library/books/_search{    &quot;query&quot;: {        &quot;match_all&quot;: { &quot;boost&quot; : 1.0 }    }}</code></pre><h4 id="3-Full-text-queries"><a href="#3-Full-text-queries" class="headerlink" title="3. Full text queries"></a>3. Full text queries</h4><h5 id="3-1-match-query"><a href="#3-1-match-query" class="headerlink" title="3.1 match query"></a>3.1 match query</h5><pre><code class="json">GET /library/books/_search{    &quot;query&quot;: {        &quot;match&quot; : {            &quot;title&quot; : {                &quot;query&quot; : &quot;java&quot;            }        }    }}#使用模糊匹配，&quot;fuzziness&quot;: &quot;AUTO&quot;GET /library/books/_search{    &quot;query&quot;: {        &quot;match&quot; : {            &quot;title&quot; : {                &quot;query&quot; : &quot;javas&quot;,                &quot;fuzziness&quot;: &quot;AUTO&quot;            }        }    }}</code></pre><h5 id="3-2-match-phrase短语查询"><a href="#3-2-match-phrase短语查询" class="headerlink" title="3.2 match_phrase短语查询"></a>3.2 match_phrase短语查询</h5><pre><code class="json">#match_phrase短语查询{    &quot;query&quot;: {        &quot;match&quot; : {            &quot;title&quot; : {              &quot;query&quot;: &quot;Elastic search&quot;            }         }    }}#slop参数告诉match_phrase查询词条之间相隔多远时仍然将文档视为匹配。一个词为一个slop，默认slop为0GET /library/books/_search{    &quot;query&quot;: {        &quot;match_phrase&quot; : {            &quot;title&quot; : {              &quot;query&quot;: &quot;Elastic search java&quot;,              &quot;slop&quot;:3            }        }    }}</code></pre><h5 id="3-3-match-phrase-prefix前缀匹配查询"><a href="#3-3-match-phrase-prefix前缀匹配查询" class="headerlink" title="3.3 match_phrase_prefix前缀匹配查询"></a>3.3 match_phrase_prefix前缀匹配查询</h5><pre><code class="json">GET /library/books/_search{    &quot;query&quot;: {        &quot;match_phrase_prefix&quot; : {            &quot;title&quot; : &quot;java高&quot;        }    }}GET /library/books/_search{    &quot;query&quot;: {        &quot;match_phrase_prefix&quot; : {            &quot;title&quot; : {              &quot;query&quot;: &quot;Elastic search java&quot;,              &quot;slop&quot;:3,              &quot;max_expansions&quot; : 50            }         }    }}</code></pre><h5 id="3-4-muti-match-query-多字段匹配查询"><a href="#3-4-muti-match-query-多字段匹配查询" class="headerlink" title="3.4 muti match query 多字段匹配查询"></a>3.4 muti match query 多字段匹配查询</h5><p>multi_match 匹配查询多个字段</p><pre><code class="json">GET /library/books/_search{  &quot;query&quot;: {    &quot;multi_match&quot; : {      &quot;query&quot;:    &quot;java&quot;,       &quot;fields&quot;: [ &quot;title&quot;, &quot;type&quot; ]     }  }}#支持正则匹配多个字段GET /library/books/_search{  &quot;query&quot;: {    &quot;multi_match&quot; : {      &quot;query&quot;:    &quot;java&quot;,       &quot;fields&quot;: [ &quot;t*&quot;, &quot;author&quot; ]     }  }}</code></pre><p><code>multi_match</code>查询内部执行方式取决于<code>type</code>参数</p><p>type可以选择有：<code>best_fields</code>、<code>most_fields</code>、<code>cross_fields</code>、<code>phrase</code>、<code>phrase_prefix</code>。</p><pre><code class="json">GET /library/books/_search{  &quot;query&quot;: {    &quot;multi_match&quot; : {      &quot;query&quot;:      &quot;java&quot;,      &quot;type&quot;:       &quot;most_fields&quot;,      &quot;fields&quot;: [  &quot;type&quot;,&quot;title&quot; ]     }  }}</code></pre><h4 id="4-query-string"><a href="#4-query-string" class="headerlink" title="4. query string"></a>4. query string</h4><h5 id="4-1-query-string"><a href="#4-1-query-string" class="headerlink" title="4.1 query string"></a>4.1 query string</h5><pre><code class="json">GET /library/books/_search{    &quot;query&quot;: {        &quot;query_string&quot; : {            &quot;default_field&quot; : &quot;title&quot;,            &quot;query&quot; : &quot;(java) OR (mysql)&quot;         }    }}#mutli fieldsGET /library/books/_search{    &quot;query&quot;: {        &quot;query_string&quot; : {            &quot;fields&quot; : [&quot;title&quot;, &quot;type&quot;],            &quot;query&quot; : &quot;java&quot;        }    }}</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Elasticsearch检索DSL语句之match-query&quot;&gt;&lt;a href=&quot;#Elasticsearch检索DSL语句之match-query&quot; class=&quot;headerlink&quot; title=&quot;Elasticsearch检索DSL语句之match q
+      
+    
+    </summary>
+    
+    
+      <category term="elasticsearch" scheme="http://yoursite.com/tags/elasticsearch/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Elasticsearch检索DSL语句之term query</title>
+    <link href="http://yoursite.com/2019/02/15/Elasticsearch%E6%A3%80%E7%B4%A2DSL%E8%AF%AD%E5%8F%A5%E4%B9%8Bterm-query/"/>
+    <id>http://yoursite.com/2019/02/15/Elasticsearch检索DSL语句之term-query/</id>
+    <published>2019-02-15T09:34:54.000Z</published>
+    <updated>2019-02-20T01:50:24.908Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Elasticsearch检索DSL语句之term-query"><a href="#Elasticsearch检索DSL语句之term-query" class="headerlink" title="Elasticsearch检索DSL语句之term query"></a>Elasticsearch检索DSL语句之term query</h3><p>####1. 精确查询</p><p>#####1.1 term查询</p><p>term过滤器常用来处理数字、布尔值、日期和文本。</p><pre><code class="json">GET /library/books/_search{  &quot;query&quot;: {      &quot;term&quot;: {        &quot;title&quot;: &quot;mysql&quot;      }  }}</code></pre><p>通常当查找一个精确值的时候，我们不希望对查询进行评分计算。只希望对文档进行包括或排除的计算，所以我们会使用 <code>constant_score</code> 查询以非评分模式来执行 <code>term</code> 查询并以一作为统一评分。</p><pre><code class="json">GET /library/books/_search{  &quot;query&quot;: {    &quot;constant_score&quot;: {      &quot;filter&quot;: {        &quot;term&quot;: {          &quot;title&quot;: &quot;mysql&quot;        }      }    }  }}</code></pre><p>term查询会使用小写。</p><p>如果我们想精确查找？</p><h5 id="1-2-精确查找短语"><a href="#1-2-精确查找短语" class="headerlink" title="1.2 精确查找短语"></a>1.2 精确查找短语</h5><pre><code class="json">#重新创建一个索引映射PUT lib{  &quot;mappings&quot;: {    &quot;book&quot;: {      &quot;properties&quot;: {        &quot;full_text&quot;: {          &quot;type&quot;:  &quot;text&quot;     #text类型会进行分词        },        &quot;exact_value&quot;: {          &quot;type&quot;:  &quot;keyword&quot; # keyword关键词类型不会进行分词        }      }    }  }}# 插入一条文档数据POST /lib/book/1{  &quot;full_text&quot;:   &quot;Elasticsearch in action&quot;,   &quot;exact_value&quot;: &quot;Elasticsearch in action&quot;  }#依次执行以下查询发现有什么区别GET lib/book/_search{  &quot;query&quot;: {    &quot;term&quot;: {      &quot;exact_value&quot;: &quot;Elasticsearch in action&quot;     }  }}GET lib/book/_search{  &quot;query&quot;: {    &quot;term&quot;: {      &quot;exact_value&quot;: &quot;Elasticsearch&quot;     }  }}GET lib/book/_search{  &quot;query&quot;: {    &quot;term&quot;: {      &quot;full_text&quot;: &quot;Elasticsearch&quot;     }  }}GET lib/book/_search{  &quot;query&quot;: {    &quot;term&quot;: {      &quot;full_text&quot;: &quot;elasticsearch&quot;     }  }}</code></pre><h4 id="2-组合过滤器"><a href="#2-组合过滤器" class="headerlink" title="2. 组合过滤器"></a>2. 组合过滤器</h4><p>通常情况下我们查询是复杂的多个条件查询，这时需要使用复合过滤器，可以接受多个其他类型的过滤器作为参数</p><p>#####2.1 布尔查询</p><p>布尔<code>bool</code>过滤器有三部分组成：</p><pre><code class="json">{   &quot;bool&quot; : {      &quot;must&quot; :     [],      &quot;should&quot; :   [],      &quot;must_not&quot; : [],   }}</code></pre><p> 过滤查询已被弃用,使用 query/bool/must   query/bool/filter等进行查询。</p><pre><code class="json">GET /library/books/_search{   &quot;query&quot; : {        &quot;bool&quot; : {          &quot;must&quot;: [            {              &quot;term&quot; : {&quot;author&quot;: &quot;william&quot;}            }          ],           &quot;should&quot; : [             { &quot;term&quot; : {&quot;edition&quot; : 3}},              { &quot;term&quot; : {&quot;type&quot; : &quot;java&quot;}}           ],          &quot;must_not&quot; : {             &quot;term&quot; : {&quot;edition&quot; : 2}           }       }   }}GET /library/books/_search{   &quot;query&quot; : {        &quot;bool&quot; : {          &quot;should&quot; : [             { &quot;term&quot; : {&quot;edition&quot; : 3}},              { &quot;term&quot; : {&quot;type&quot; : &quot;java&quot;}}           ],          &quot;must_not&quot; : {             &quot;term&quot; : {&quot;edition&quot; : 2}           },          &quot;filter&quot;: {              &quot;term&quot; : {                   &quot;author&quot;: &quot;william&quot;              }          }       }   }}</code></pre><h5 id="2-2-嵌套布尔查询"><a href="#2-2-嵌套布尔查询" class="headerlink" title="2.2 嵌套布尔查询"></a>2.2 嵌套布尔查询</h5><p>我们来看看下面的sql查询：</p><pre><code class="mysql">SELECT document FROM booksWHERE  type = &quot;mysql&quot;OR ( type = &quot;java&quot; AND edition = 4 )</code></pre><p>对于这种查询场景需要我们用到嵌套布尔查询，DSL语句如下：</p><pre><code class="json">GET /library/books/_search{   &quot;query&quot; : {      &quot;bool&quot; : {        &quot;should&quot; : [          { &quot;term&quot; : {&quot;type&quot; : &quot;mysql&quot;}},          { &quot;bool&quot; : {             &quot;must&quot; : [              {                &quot;term&quot; : {&quot;type&quot;:&quot;java&quot;}              },               { &quot;term&quot; : {&quot;edition&quot; : 4}}             ]          }}        ]     }   }}</code></pre><h4 id="3-查询多个精确值"><a href="#3-查询多个精确值" class="headerlink" title="3. 查询多个精确值"></a>3. 查询多个精确值</h4><p>#####3.1 terms查询</p><p>想要精确查询多个值可以使用<code>terms</code>查询。</p><pre><code class="json">GET /library/books/_search{    &quot;query&quot; : {        &quot;terms&quot;: {          &quot;type&quot;: [&quot;spring&quot;,&quot;java&quot;]        }    }}</code></pre><h4 id="4-范围查询"><a href="#4-范围查询" class="headerlink" title="4. 范围查询"></a>4. 范围查询</h4><p>#####4.1 range范围查询</p><p>对于范围过滤我们可以使用<code>Elasticsearch</code>中的<strong>range</strong>，提供的组合选项有：<strong>gt</strong>、<strong>lt</strong>、<strong>gte</strong>、<strong>lte</strong>，顾名思义，不解释了。</p><pre><code class="json">GET /library/books/_search{    &quot;query&quot; : {      &quot;bool&quot;: {        &quot;must&quot;:{          &quot;range&quot;:{            &quot;publishDate&quot;:{              &quot;gte&quot;:&quot;2010-01-01&quot;,              &quot;lte&quot;:&quot;2010-12-01&quot;            }        }      }    }  }}</code></pre><p>更多日期计算请参考：<a href="https://www.elastic.co/guide/en/elasticsearch/reference/5.6/mapping-date-format.html" target="_blank" rel="noopener">时间格式参考文档</a></p><h4 id="5-前缀查询"><a href="#5-前缀查询" class="headerlink" title="5. 前缀查询"></a>5. 前缀查询</h4><p>#####5.1 prdfix query</p><pre><code class="json">GET /library/books/_search{   &quot;query&quot;:    {        &quot;prefix&quot; : { &quot;title&quot; : &quot;java&quot; }  }}</code></pre><h4 id="6-模糊查询"><a href="#6-模糊查询" class="headerlink" title="6. 模糊查询"></a>6. 模糊查询</h4><h5 id="6-1-wildcard模糊查询"><a href="#6-1-wildcard模糊查询" class="headerlink" title="6.1 wildcard模糊查询"></a>6.1 wildcard模糊查询</h5><pre><code class="json">GET /library/books/_search{   &quot;query&quot;: {    &quot;wildcard&quot; : { &quot;title&quot; : &quot;python*&quot; }  }}</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Elasticsearch检索DSL语句之term-query&quot;&gt;&lt;a href=&quot;#Elasticsearch检索DSL语句之term-query&quot; class=&quot;headerlink&quot; title=&quot;Elasticsearch检索DSL语句之term quer
+      
+    
+    </summary>
+    
+    
+      <category term="elasticsearch" scheme="http://yoursite.com/tags/elasticsearch/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Netty笔记整理之EventLoopGroup</title>
+    <link href="http://yoursite.com/2019/01/25/Netty%E7%AC%94%E8%AE%B0%E6%95%B4%E7%90%86%E4%B9%8BEventLoopGroup/"/>
+    <id>http://yoursite.com/2019/01/25/Netty笔记整理之EventLoopGroup/</id>
+    <published>2019-01-25T10:45:20.000Z</published>
+    <updated>2019-01-25T10:45:20.972Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Netty笔记整理之Reactor模型</title>
+    <link href="http://yoursite.com/2019/01/16/Netty%E7%AC%94%E8%AE%B0%E6%95%B4%E7%90%86%E4%B9%8BReactor%E6%A8%A1%E5%9E%8B/"/>
+    <id>http://yoursite.com/2019/01/16/Netty笔记整理之Reactor模型/</id>
+    <published>2019-01-16T10:15:16.000Z</published>
+    <updated>2019-01-16T10:24:23.811Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Netty笔记整理之Reactor模型"><a href="#Netty笔记整理之Reactor模型" class="headerlink" title="Netty笔记整理之Reactor模型"></a>Netty笔记整理之Reactor模型</h3><h4 id="1-什么是Reactor"><a href="#1-什么是Reactor" class="headerlink" title="1. 什么是Reactor"></a>1. 什么是Reactor</h4><h4 id="2-它能解决什么问题"><a href="#2-它能解决什么问题" class="headerlink" title="2. 它能解决什么问题"></a>2. 它能解决什么问题</h4>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Netty笔记整理之Reactor模型&quot;&gt;&lt;a href=&quot;#Netty笔记整理之Reactor模型&quot; class=&quot;headerlink&quot; title=&quot;Netty笔记整理之Reactor模型&quot;&gt;&lt;/a&gt;Netty笔记整理之Reactor模型&lt;/h3&gt;&lt;h4 i
+      
+    
+    </summary>
+    
+    
+      <category term="Netty" scheme="http://yoursite.com/tags/Netty/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Netty笔记整理之Selector</title>
+    <link href="http://yoursite.com/2019/01/16/Netty%E7%AC%94%E8%AE%B0%E6%95%B4%E7%90%86%E4%B9%8BSelector/"/>
+    <id>http://yoursite.com/2019/01/16/Netty笔记整理之Selector/</id>
+    <published>2019-01-16T03:49:50.000Z</published>
+    <updated>2019-01-16T10:07:26.402Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Netty笔记整理之Selector"><a href="#Netty笔记整理之Selector" class="headerlink" title="Netty笔记整理之Selector"></a>Netty笔记整理之Selector</h3><h4 id="1-Selector概述"><a href="#1-Selector概述" class="headerlink" title="1. Selector概述"></a>1. Selector概述</h4><p><strong>Selector</strong> 是实现<strong>多路复用器</strong>的关键类 。它是Java NIO核心组件中的一个，Channel代表这一个网络连接通道，可以将Channel注册到Selector中以实现Selector对其的管理。</p><h5 id="1-1-Selector的创建"><a href="#1-1-Selector的创建" class="headerlink" title="1.1 Selector的创建"></a>1.1 Selector的创建</h5><p>通过open()来创建Selector.</p><pre><code class="java">Selector selector = Selector.open()</code></pre><h5 id="1-2-将Channel注册到Selector中"><a href="#1-2-将Channel注册到Selector中" class="headerlink" title="1.2 将Channel注册到Selector中"></a>1.2 将Channel注册到Selector中</h5><pre><code class="java">channel.configureBlocking(false);SelectionKey key = channel.register(selector, SelectionKey.OP_READ);</code></pre><ul><li><p>如果一个 Channel 要注册到 Selector 中，那么该 Channel 必须是<strong>非阻塞</strong>，<code>SelectableChannel</code>抽象类有一个 <strong>configureBlocking()</strong> 方法用于使通道处于阻塞模式或非阻塞模式。所以有<code>channel.configureBlocking(false);</code> 代码块。FileChannel不适用于Selector，FileChannel不能切换为非阻塞模式，更准确的来说是因为FileChannel没有继承SelectableChannel。因此，FileChannel 是不能够注册到 Channel 中的，因为它是<strong>阻塞</strong>的。</p></li><li><p>在 <code>register(Selector selector, int interestSet)</code> 方法的第二个参数，表示一个“interest 集合”，意思是通过 Selector 监听 Channel 时，对哪些事件感兴趣。可以监听四种不同类型的事件：</p><p>Connect：连接完成事件( TCP 连接 )，仅适用于客户端，对应 <code>SelectionKey.OP_CONNECT</code> ；</p><p>Accept：接受新连接事件，仅适用于服务端，对应 <code>SelectionKey.OP_ACCEPT</code> ；</p><p>Read：读事件，适用于两端，对应 <code>SelectionKey.OP_READ</code> ，表示 Buffer 可读；</p><p>Write：写时间，适用于两端，对应 <code>SelectionKey.OP_WRITE</code> ，表示 Buffer 可写。</p></li></ul><p>  因为Selector可以对Channel的多个事件感兴趣，我们可以使用<strong>或运算</strong> <code>|</code> 来关注多个事件。</p><pre><code class="java">  channel.register(selector, SelectionKey.OP_ACCEPT|SelectionKey.OP_READ|SelectionKey.OP_WRITE);</code></pre><h4 id="2-SelectorKey"><a href="#2-SelectorKey" class="headerlink" title="2. SelectorKey"></a>2. SelectorKey</h4><h5 id="2-1-SelectorKey"><a href="#2-1-SelectorKey" class="headerlink" title="2.1 SelectorKey"></a>2.1 SelectorKey</h5><p>当Channel注册到Selector后会返回一个<strong>SelectionKey</strong>对象，该SelectionKey对象则代表这这个Channel和它注册的Selector间的关系。</p><pre><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ);</code></pre><p><code>SelectionKey</code>是个抽象类，其中有四个重要属性：</p><pre><code class="java">package java.nio.channels;public abstract class SelectionKey {    //感兴趣的事件集    public abstract int interestOps();    //准备就绪的事件集合    public abstract int readyOps();    //    public abstract SelectableChannel channel();    //    public abstract Selector selector();}</code></pre><p>interestOps()是我们希望Selector监听Channel的哪些事件。我们将我们感兴趣的事件设置到该字段，这样在selection操作时，当发现该Channel有我们所感兴趣的事件发生时，就会将我们感兴趣的事件再设置到readyOps中，这样我们就能得知是哪些事件发生了以做相应处理。</p><h4 id="3-通过Selector选择Channel"><a href="#3-通过Selector选择Channel" class="headerlink" title="3. 通过Selector选择Channel"></a>3. 通过Selector选择Channel</h4><h5 id="3-1-SelectionKey中三个集合"><a href="#3-1-SelectionKey中三个集合" class="headerlink" title="3.1 SelectionKey中三个集合"></a>3.1 SelectionKey中三个集合</h5><p>Selector中维护3个特别重要的SelectionKey集合，分别是:</p><ul><li>keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。</li><li>selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。</li><li>cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。</li></ul><h5 id="3-2-Selection的三种操作"><a href="#3-2-Selection的三种操作" class="headerlink" title="3.2 Selection的三种操作"></a>3.2 Selection的三种操作</h5><p>selection操作有3中类型：</p><p>① select()：该方法会一直阻塞直到至少一个channel被选择(即，该channel注册的事件发生了)为止，除非当前线程发生中断或者selector的wakeup方法被调用。<br>② select(long time)：该方法和select()类似，该方法也会导致阻塞直到至少一个channel被选择(即，该channel注册的事件发生了)为止，除非下面3种情况任意一种发生：a) 设置的超时时间到达；b) 当前线程发生中断；c) selector的wakeup方法被调用<br>③ selectNow()：该方法不会发生阻塞，如果没有一个channel被选择也会立即返回。</p><h5 id="3-3-唤醒Selector"><a href="#3-3-唤醒Selector" class="headerlink" title="3.3 唤醒Selector"></a>3.3 唤醒Selector</h5><pre><code></code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Netty笔记整理之Selector&quot;&gt;&lt;a href=&quot;#Netty笔记整理之Selector&quot; class=&quot;headerlink&quot; title=&quot;Netty笔记整理之Selector&quot;&gt;&lt;/a&gt;Netty笔记整理之Selector&lt;/h3&gt;&lt;h4 id=&quot;1
+      
+    
+    </summary>
+    
+    
+      <category term="Netty" scheme="http://yoursite.com/tags/Netty/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Netty笔记整理之Buffer</title>
+    <link href="http://yoursite.com/2019/01/10/Netty%E7%AC%94%E8%AE%B0%E6%95%B4%E7%90%86%E4%B9%8BBuffer/"/>
+    <id>http://yoursite.com/2019/01/10/Netty笔记整理之Buffer/</id>
+    <published>2019-01-10T10:02:20.000Z</published>
+    <updated>2019-01-10T10:12:04.576Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Netty笔记整理之Buffer"><a href="#Netty笔记整理之Buffer" class="headerlink" title="Netty笔记整理之Buffer"></a>Netty笔记整理之Buffer</h3><h4 id="1-Buffer概述"><a href="#1-Buffer概述" class="headerlink" title="1. Buffer概述"></a>1. Buffer概述</h4><p>Buffer 在 <code>java.nio</code> 包中实现，被定义成<strong>抽象类</strong>，从而实现一组常用的方法。</p><ul><li>我们可以将 Buffer 理解为<strong>一个数组的封装</strong>，例如 IntBuffer、CharBuffer、ByteBuffer 等分别对应 <code>int[]</code>、<code>char[]</code>、<code>byte[]</code> 等。</li><li>MappedByteBuffer 用于实现内存映射文件，不是本文关注的重点。因此，感兴趣的胖友，可以自己 Google 了解，还是蛮有趣的。</li></ul><h4 id="2-Buffer"><a href="#2-Buffer" class="headerlink" title="2. Buffer"></a>2. Buffer</h4>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Netty笔记整理之Buffer&quot;&gt;&lt;a href=&quot;#Netty笔记整理之Buffer&quot; class=&quot;headerlink&quot; title=&quot;Netty笔记整理之Buffer&quot;&gt;&lt;/a&gt;Netty笔记整理之Buffer&lt;/h3&gt;&lt;h4 id=&quot;1-Buffer概
+      
+    
+    </summary>
+    
+    
+      <category term="Netty" scheme="http://yoursite.com/tags/Netty/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Netty框架整理之JAVA I/O模型</title>
+    <link href="http://yoursite.com/2019/01/07/Netty%E6%A1%86%E6%9E%B6%E6%95%B4%E7%90%86%E4%B9%8BJAVA%20IO%E6%A8%A1%E5%9E%8B/"/>
+    <id>http://yoursite.com/2019/01/07/Netty框架整理之JAVA IO模型/</id>
+    <published>2019-01-07T11:52:17.000Z</published>
+    <updated>2019-01-07T12:05:41.967Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Java-I-O模型"><a href="#Java-I-O模型" class="headerlink" title="Java I/O模型"></a>Java I/O模型</h3><h4 id="1-阻塞与非阻塞"><a href="#1-阻塞与非阻塞" class="headerlink" title="1. 阻塞与非阻塞"></a>1. 阻塞与非阻塞</h4><p>在前面介绍了同步和异步的区别，这一节来看一下阻塞和非阻塞的区别。</p><p>　　阻塞就是：当某个事件或者任务在执行过程中，它发出一个请求操作，但是由于该请求操作需要的条件不满足，那么就会一直在那等待，直至条件满足；</p><p>　　非阻塞就是：当某个事件或者任务在执行过程中，它发出一个请求操作，如果该请求操作需要的条件不满足，会立即返回一个标志信息告知条件不满足，不会一直在那等待。</p><p>　　这就是阻塞和非阻塞的区别。也就是说阻塞和非阻塞的区别关键在于当发出请求一个操作时，如果条件不满足，是会一直等待还是返回一个标志信息。</p><p>　　举个简单的例子：</p><p>　　假如我要读取一个文件中的内容，如果此时文件中没有内容可读，对于同步来说就是会一直在那等待，直至文件中有内容可读；而对于非阻塞来说，就会直接返回一个标志信息告知文件中暂时无内容可读。</p><p>　　在网上有一些朋友将同步和异步分别与阻塞和非阻塞画上等号，事实上，它们是两组完全不同的概念。注意，理解这两组概念的区别对于后面IO模型的理解非常重要。</p><p>　　同步和异步着重点在于多个任务的执行过程中，一个任务的执行是否会导致整个流程的暂时等待；</p><p>　　而阻塞和非阻塞着重点在于发出一个请求操作时，如果进行操作的条件不满足是否会返会一个标志信息告知条件不满足。</p><p>　　理解阻塞和非阻塞可以同线程阻塞类比地理解，当一个线程进行一个请求操作时，如果条件不满足，则会被阻塞，即在那等待条件满足。</p><p>　在了解阻塞IO和非阻塞IO之前，先看下一个具体的IO操作过程是怎么进行的。</p><p>　　通常来说，IO操作包括：对硬盘的读写、对socket的读写以及外设的读写。</p><p>　　当用户线程发起一个IO请求操作（本文以读请求操作为例），内核会去查看要读取的数据是否就绪，对于阻塞IO来说，如果数据没有就绪，则会一直在那等待，直到数据就绪；对于非阻塞IO来说，如果数据没有就绪，则会返回一个标志信息告知用户线程当前要读的数据没有就绪。当数据就绪之后，便将数据拷贝到用户线程，这样才完成了一个完整的IO读请求操作，也就是说一个完整的IO读请求操作包括两个阶段：</p><p>　　1）查看数据是否就绪；</p><p>　　2）进行数据拷贝（内核将数据拷贝到用户线程）。</p><p>　　那么阻塞（blocking IO）和非阻塞（non-blocking IO）的区别就在于第一个阶段，如果数据没有就绪，在查看数据是否就绪的过程中是一直等待，还是直接返回一个标志信息。</p><p>　　Java中传统的IO都是阻塞IO，比如通过socket来读数据，调用read()方法之后，如果数据没有就绪，当前线程就会一直阻塞在read方法调用那里，直到有数据才返回；而如果是非阻塞IO的话，当数据没有就绪，read()方法应该返回一个标志信息，告知当前线程数据没有就绪，而不是一直在那里等待。</p><h4 id="2-同步与非同步"><a href="#2-同步与非同步" class="headerlink" title="2. 同步与非同步"></a>2. 同步与非同步</h4><p>同步和异步的概念出来已经很久了，网上有关同步和异步的说法也有很多。以下是我个人的理解：</p><p>　　同步就是：如果有多个任务或者事件要发生，这些任务或者事件必须逐个地进行，一个事件或者任务的执行会导致整个流程的暂时等待，这些事件没有办法并发地执行；</p><p>　　异步就是：如果有多个任务或者事件发生，这些事件可以并发地执行，一个事件或者任务的执行不会导致整个流程的暂时等待。</p><p>　　这就是同步和异步。举个简单的例子，假如有一个任务包括两个子任务A和B，对于同步来说，当A在执行的过程中，B只有等待，直至A执行完毕，B才能执行；而对于异步就是A和B可以并发地执行，B不必等待A执行完毕之后再执行，这样就不会由于A的执行导致整个任务的暂时等待。</p><p>　我们先来看一下同步IO和异步IO的定义，在《Unix网络编程》一书中对同步IO和异步IO的定义是这样的：</p><p>　　<strong>A synchronous I/O operation causes the requesting process to be blocked until that I/O operation completes.</strong><br>　　<strong>An asynchronous I/O operation does not cause the requesting process to be blocked.</strong></p><p>　　从字面的意思可以看出：同步IO即 如果一个线程请求进行IO操作，在IO操作完成之前，该线程会被阻塞；</p><p>　　而异步IO为 如果一个线程请求进行IO操作，IO操作不会导致请求线程被阻塞。</p><p>　　事实上，同步IO和异步IO模型是针对用户线程和内核的交互来说的：</p><p>　　对于同步IO：当用户发出IO请求操作之后，如果数据没有就绪，需要通过用户线程或者内核不断地去轮询数据是否就绪，当数据就绪时，再将数据从内核拷贝到用户线程；</p><p>　　而异步IO：只有IO请求操作的发出是由用户线程来进行的，IO操作的两个阶段都是由内核自动完成，然后发送通知告知用户线程IO操作已经完成。也就是说在异步IO中，不会对用户线程产生任何阻塞。</p><p>　　这是同步IO和异步IO关键区别所在，同步IO和异步IO的关键区别反映在数据拷贝阶段是由用户线程完成还是内核完成。所以说异步IO必须要有操作系统的底层支持。</p><p>　　注意同步IO和异步IO与阻塞IO和非阻塞IO是不同的两组概念。</p><p>　　阻塞IO和非阻塞IO是反映在当用户请求IO操作时，如果数据没有就绪，是用户线程一直等待数据就绪，还是会收到一个标志信息这一点上面的。也就是说，阻塞IO和非阻塞IO是反映在IO操作的第一个阶段，在查看数据是否就绪时是如何处理的。</p><h4 id="3-五种IO模型"><a href="#3-五种IO模型" class="headerlink" title="3. 五种IO模型"></a>3. 五种IO模型</h4>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Java-I-O模型&quot;&gt;&lt;a href=&quot;#Java-I-O模型&quot; class=&quot;headerlink&quot; title=&quot;Java I/O模型&quot;&gt;&lt;/a&gt;Java I/O模型&lt;/h3&gt;&lt;h4 id=&quot;1-阻塞与非阻塞&quot;&gt;&lt;a href=&quot;#1-阻塞与非阻塞&quot; cla
+      
+    
+    </summary>
+    
+    
+      <category term="Netty" scheme="http://yoursite.com/tags/Netty/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Spring之@Autowired注解</title>
+    <link href="http://yoursite.com/2019/01/03/Spring%E4%B9%8B-Autowired%E6%B3%A8%E8%A7%A3/"/>
+    <id>http://yoursite.com/2019/01/03/Spring之-Autowired注解/</id>
+    <published>2019-01-03T11:54:36.000Z</published>
+    <updated>2019-01-03T12:10:17.721Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Spring之-Autowired注解"><a href="#Spring之-Autowired注解" class="headerlink" title="Spring之@Autowired注解"></a>Spring之@Autowired注解</h3><p>@Autowired是我们开发中常用的注解，它能自动的将需要依赖的类注入进来</p><p>对象注入有两种方式：</p><ul><li>按照bean名称注入</li><li>按照type类型注入</li></ul><pre><code class="xml">  &lt;bean name=&#39;userInfo&#39; class=&#39;com.william.entity.UserInfo&#39;&gt;      &lt;property name=&#39;name&#39; value=&quot;william&quot;&gt;&lt;/property&gt;      &lt;property name=&#39;age&#39; value=&quot;18&quot;&gt;&lt;/property&gt;  &lt;/bean&gt;  &lt;bean name=&#39;userInfo&#39; class=&#39;com.william.usermanage.entity.UserInfo&#39;&gt;      &lt;property name=&#39;name&#39; value=&quot;william&quot;&gt;&lt;/property&gt;      &lt;property name=&#39;age&#39; value=&quot;18&quot;&gt;&lt;/property&gt;  &lt;/bean&gt;</code></pre><p>默认情况下使用类名首字母小写作为bean的id注入到Spring容器中，当有一个bean的类名相同，这时候需要配合</p><p><strong>@Qualifier</strong>注解来注入。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Spring之-Autowired注解&quot;&gt;&lt;a href=&quot;#Spring之-Autowired注解&quot; class=&quot;headerlink&quot; title=&quot;Spring之@Autowired注解&quot;&gt;&lt;/a&gt;Spring之@Autowired注解&lt;/h3&gt;&lt;p&gt;@A
+      
+    
+    </summary>
+    
+    
+      <category term="Spring" scheme="http://yoursite.com/tags/Spring/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SpringCloud自学之路Ribbon负载均衡</title>
+    <link href="http://yoursite.com/2018/12/29/SpringCloud%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AFRibbon%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"/>
+    <id>http://yoursite.com/2018/12/29/SpringCloud学习之路Ribbon负载均衡/</id>
+    <published>2018-12-29T09:56:15.000Z</published>
+    <updated>2018-12-29T09:56:15.471Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ES之快速索引原理</title>
+    <link href="http://yoursite.com/2018/12/29/ES%E4%B9%8B%E5%BF%AB%E9%80%9F%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86/"/>
+    <id>http://yoursite.com/2018/12/29/ES之快速索引原理/</id>
+    <published>2018-12-29T08:35:24.000Z</published>
+    <updated>2018-12-29T08:35:24.079Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ES之javaAPI使用01</title>
+    <link href="http://yoursite.com/2018/12/29/ES%E4%B9%8BjavaAPI%E4%BD%BF%E7%94%A801/"/>
+    <id>http://yoursite.com/2018/12/29/ES之javaAPI使用01/</id>
+    <published>2018-12-29T08:33:02.000Z</published>
+    <updated>2018-12-29T08:33:02.547Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ES之聚合查询</title>
+    <link href="http://yoursite.com/2018/12/29/ES%E4%B9%8B%E8%81%9A%E5%90%88%E6%9F%A5%E8%AF%A2/"/>
+    <id>http://yoursite.com/2018/12/29/ES之聚合查询/</id>
+    <published>2018-12-29T08:32:08.000Z</published>
+    <updated>2018-12-29T08:32:08.986Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Spring之IOC依赖注入细节分析</title>
+    <link href="http://yoursite.com/2018/12/29/Spring%E4%B9%8BIOC%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/"/>
+    <id>http://yoursite.com/2018/12/29/Spring之IOC依赖注入细节分析/</id>
+    <published>2018-12-29T08:30:19.000Z</published>
+    <updated>2018-12-29T08:30:19.995Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Spring之解析bean标签</title>
+    <link href="http://yoursite.com/2018/12/29/Spring%E4%B9%8B%E8%A7%A3%E6%9E%90bean%E6%A0%87%E7%AD%BE/"/>
+    <id>http://yoursite.com/2018/12/29/Spring之解析bean标签/</id>
+    <published>2018-12-29T08:29:03.000Z</published>
+    <updated>2018-12-29T08:29:03.573Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Spring之加载BeanDefinition</title>
+    <link href="http://yoursite.com/2018/12/29/Spring%E4%B9%8B%E5%8A%A0%E8%BD%BDBeanDefinition/"/>
+    <id>http://yoursite.com/2018/12/29/Spring之加载BeanDefinition/</id>
+    <published>2018-12-29T08:01:11.000Z</published>
+    <updated>2018-12-29T08:01:11.889Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
