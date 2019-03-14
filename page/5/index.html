@@ -259,6 +259,150 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/12/并发编程之深入理解之一/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/12/并发编程之深入理解之一/" itemprop="url">并发编程之深入理解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-12T19:21:22+08:00">
+                2018-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/并发编程/" itemprop="url" rel="index">
+                    <span itemprop="name">并发编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="并发编程之深入理解"><a href="#并发编程之深入理解" class="headerlink" title="并发编程之深入理解"></a>并发编程之深入理解</h3><h4 id="1-并发编程三大特性"><a href="#1-并发编程三大特性" class="headerlink" title="1.并发编程三大特性"></a>1.并发编程三大特性</h4><p>三大特性：原子性，可见性，有序性。</p>
+<h4 id="2-synchronized"><a href="#2-synchronized" class="headerlink" title="2.synchronized"></a>2.synchronized</h4><p>​    任何一个对象都有监视器<strong>monitor</strong>，当这个对象由同步块或者同步方法调用时，执行方法的线程必须先获取对象的监视器才能进入同步块或者同步方法，而其他没有获取到的线程只能处于阻塞状态<strong>BLOCKED</strong>。对于同步块使用了<strong>monitorenter</strong>和<strong>monitorexit</strong>指令，而同步方法则依靠方法上的修饰符<strong>ACC_SYNCHRONIZED</strong>来完成的，他们的本质都是获取一个对象的监视器monitor，在同一时刻只有一个线程获取到对象的监视器来实现同步，这个过程具有排他性。</p>
+<p>####3.volatile</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/10/并发编程之内存屏障/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -671,7 +815,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
