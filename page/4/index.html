@@ -259,6 +259,125 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/14/Kafka笔记整理01/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/14/Kafka笔记整理01/" itemprop="url">Kafka笔记整理01</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-14T18:08:12+08:00">
+                2018-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/09/SpringBoot整合Elasticsearch之01/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1466,137 +1585,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/12/多线程之Synchronized实现原理/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/12/多线程之Synchronized实现原理/" itemprop="url">多线程之Synchronized实现原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-12T19:42:57+08:00">
-                2018-08-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Synchronized实现原理"><a href="#Synchronized实现原理" class="headerlink" title="Synchronized实现原理"></a>Synchronized实现原理</h3><h4 id="1-认识Synchronized关键字"><a href="#1-认识Synchronized关键字" class="headerlink" title="1.认识Synchronized关键字"></a>1.认识Synchronized关键字</h4><p>​    编写多线程代码是通常程序员不管懂不懂synchronized实现都会使用，原因就是当我们操作临界区资源时，就需要同步机制，synchronized可以实现线程同步，解决原子性、有序性和可见性问题。今天我们就来刨根问底来搞清楚synchronized实现原理。</p>
-<h5 id="1-1-三种使用"><a href="#1-1-三种使用" class="headerlink" title="1.1 三种使用"></a>1.1 三种使用</h5><pre><code>&lt;!--more--&gt; 
-</code></pre><p>（1）修饰实例方法，作用于当前实例加锁，进入同步代码前要获得当前实例的锁</p>
-<p>（2）修饰静态方法，作用于当前类对象加锁，进入同步代码前要获得当前类对象的锁</p>
-<p>（3）修饰代码块，指定加锁对象，对给定对象加锁，进入同步代码库前要获得给定对象的锁。 这种方式把需要同步的范围变小，即只把需要共享数据的代码锁起来，故而效果更好。</p>
-<h5 id="1-2-synchronized字节码指令"><a href="#1-2-synchronized字节码指令" class="headerlink" title="1.2 synchronized字节码指令"></a>1.2 synchronized字节码指令</h5><p>通过javap -v 来查看对应代码的字节码指令，</p>
-<h4 id="2-对象监视器Monitor"><a href="#2-对象监视器Monitor" class="headerlink" title="2.对象监视器Monitor"></a>2.对象监视器Monitor</h4><p>#####2.1 monitorenter与monitorexit</p>
-<p>​    对于同步块的实现使用了<code>monitorenter</code>和<code>monitorexit</code>指令，他们隐式的执行了<code>Lock</code>和<code>UnLock</code>操作，用于提供原子性保证。 <code>monitorenter</code>指令插入到同步代码块开始的位置、<code>monitorexit</code>指令插入到同步代码块结束位置，jvm需要保证每 个<code>monitorenter</code>都有一个<code>monitorexit</code>对应。 这两个指令，本质上都是对一个对象的监视器(monitor)进行获取，这个过程是排他的，也就是说同一时刻只能有 一个线程获取到由synchronized所保护对象的监视器线程执行到<code>monitorenter</code>指令时，会尝试获取对象所对应的<code>monitor</code>所有权，也就是尝试获取对象的锁；而执行<code>monitorexit</code>，就是释放<code>monitor</code>的所有权 。</p>
-<h5 id="2-2-ACC-SYNCHRONIZED"><a href="#2-2-ACC-SYNCHRONIZED" class="headerlink" title="2.2 ACC_SYNCHRONIZED"></a>2.2 ACC_SYNCHRONIZED</h5><p>​    对于同步方法使用<code>ACC_SYNCHRONIZED</code>标记符来实现同步。方法级的同步是隐式的。同步方法的常量池中会有一个<code>ACC_SYNCHRONIZED</code>标志。当某个线程要访问某个方法的时候，会检查是否有<code>ACC_SYNCHRONIZED</code>，如果有设置，则需要先获得监视器锁，然后开始执行方法，方法执行之后再释放监视器锁。这时如果其他线程来请求执行方法，会因为无法获得监视器锁而被阻断住。值得注意的是，如果在方法执行过程中，发生了异常，并且方法内部并没有处理该异常，那么在异常被抛到方法外面之前监视器锁会被自动释放。</p>
-<h5 id="2-3-什么对象可以成为锁"><a href="#2-3-什么对象可以成为锁" class="headerlink" title="2.3 什么对象可以成为锁"></a>2.3 什么对象可以成为锁</h5><p>万物皆对象，对象都有锁。</p>
-<p>对象头</p>
-<h4 id="3-synchronized锁的原理"><a href="#3-synchronized锁的原理" class="headerlink" title="3 synchronized锁的原理"></a>3 synchronized锁的原理</h4><p>偏向锁&gt;轻量级锁&gt;重量级锁</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1649,7 +1637,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1671,7 +1659,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

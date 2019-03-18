@@ -259,6 +259,150 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/16/分库分表之Mycat详解上篇/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/16/分库分表之Mycat详解上篇/" itemprop="url">分库分表之mycat详解上篇</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-16T18:09:35+08:00">
+                2019-03-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="为什么要分库分表？"><a href="#为什么要分库分表？" class="headerlink" title="为什么要分库分表？"></a>为什么要分库分表？</h4><p>产生性能瓶颈原因：</p>
+<ul>
+<li>单表数据量大</li>
+<li>数据库连接</li>
+<li>硬件资源（QPS/TPS）</li>
+</ul>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><ul>
+<li>读写分离：区分读和写多数据源的数据存储和加载方式</li>
+<li>分库分表：对数据库表进行拆分，用分片的方式对数据进行管理</li>
+</ul>
+<h4 id="Mycat原理介绍"><a href="#Mycat原理介绍" class="headerlink" title="Mycat原理介绍"></a>Mycat原理介绍</h4><p>Mycat是基于<code>binlog</code>的主从复制原理。</p>
+<p><img src="/2019-03-16-分库分表之Mycat详解上篇/yl.png" alt=""></p>
+<ol>
+<li>Master主服务器将数据发生变化的操作记录到二进制文件<code>Binarylog</code>中；</li>
+<li>Slave从服务器在一定间隔时间内取探测<code>Binarylog</code>文件是否发生改变，如果发生改变，就I/O线程请求Master二进制事件；</li>
+<li>Master主服务器为每个I/线程开启一个dump线程，向其发送二进制事件；</li>
+<li>Slave从服务器将接受到的文件写到中继日志文件<code>Relaylog</code>中；</li>
+<li>最后Slave从服务器启动SQL线程读取中继日志的文件，匹配自己的配置，将需要执行的数据执行一便从而达到复制数据的目的。</li>
+</ol>
+<h4 id="Mycat配置介绍"><a href="#Mycat配置介绍" class="headerlink" title="Mycat配置介绍"></a>Mycat配置介绍</h4><ol>
+<li>sechema.xml ：配置 <code>MyCAT</code> 的逻辑库、表、数据节点、数据源；</li>
+<li>server.xml：配置启动参数；</li>
+<li>rule.xml：配置分片规则；</li>
+<li>wrapper.xml：配置JVM内核调整。</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/12/SpringCloud学习之路配置管理/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -2226,125 +2370,6 @@ OR ( type = &quot;java&quot; AND edition = 4 )
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/16/Netty笔记整理之Reactor模型/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/16/Netty笔记整理之Reactor模型/" itemprop="url">Netty笔记整理之Reactor模型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-16T18:15:16+08:00">
-                2019-01-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Netty笔记整理之Reactor模型"><a href="#Netty笔记整理之Reactor模型" class="headerlink" title="Netty笔记整理之Reactor模型"></a>Netty笔记整理之Reactor模型</h3><h4 id="1-什么是Reactor"><a href="#1-什么是Reactor" class="headerlink" title="1. 什么是Reactor"></a>1. 什么是Reactor</h4><h4 id="2-它能解决什么问题"><a href="#2-它能解决什么问题" class="headerlink" title="2. 它能解决什么问题"></a>2. 它能解决什么问题</h4>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2397,7 +2422,7 @@ OR ( type = &quot;java&quot; AND edition = 4 )
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2419,7 +2444,7 @@ OR ( type = &quot;java&quot; AND edition = 4 )
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

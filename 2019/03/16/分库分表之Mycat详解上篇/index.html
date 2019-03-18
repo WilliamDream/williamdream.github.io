@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Netty,">
+  <meta name="keywords" content="mycat,">
 
 
 
@@ -81,18 +81,20 @@
 
 
 
-<meta name="description" content="Netty笔记整理之Buffer1. Buffer概述Buffer 在 java.nio 包中实现，被定义成抽象类，从而实现一组常用的方法。  我们可以将 Buffer 理解为一个数组的封装，例如 IntBuffer、CharBuffer、ByteBuffer 等分别对应 int[]、char[]、byte[] 等。 MappedByteBuffer 用于实现内存映射文件，不是本文关注的重点。因此">
-<meta name="keywords" content="Netty">
+<meta name="description" content="为什么要分库分表？产生性能瓶颈原因：  单表数据量大 数据库连接 硬件资源（QPS/TPS）  解决方案 读写分离：区分读和写多数据源的数据存储和加载方式 分库分表：对数据库表进行拆分，用分片的方式对数据进行管理  Mycat原理介绍Mycat是基于binlog的主从复制原理。   Master主服务器将数据发生变化的操作记录到二进制文件Binarylog中； Slave从服务器在一定间隔时间内取">
+<meta name="keywords" content="mycat">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Netty笔记整理之Buffer">
-<meta property="og:url" content="http://yoursite.com/2019/01/10/Netty笔记整理之Buffer/index.html">
+<meta property="og:title" content="分库分表之mycat详解上篇">
+<meta property="og:url" content="http://yoursite.com/2019/03/16/分库分表之Mycat详解上篇/index.html">
 <meta property="og:site_name" content="一个人的独奏">
-<meta property="og:description" content="Netty笔记整理之Buffer1. Buffer概述Buffer 在 java.nio 包中实现，被定义成抽象类，从而实现一组常用的方法。  我们可以将 Buffer 理解为一个数组的封装，例如 IntBuffer、CharBuffer、ByteBuffer 等分别对应 int[]、char[]、byte[] 等。 MappedByteBuffer 用于实现内存映射文件，不是本文关注的重点。因此">
+<meta property="og:description" content="为什么要分库分表？产生性能瓶颈原因：  单表数据量大 数据库连接 硬件资源（QPS/TPS）  解决方案 读写分离：区分读和写多数据源的数据存储和加载方式 分库分表：对数据库表进行拆分，用分片的方式对数据进行管理  Mycat原理介绍Mycat是基于binlog的主从复制原理。   Master主服务器将数据发生变化的操作记录到二进制文件Binarylog中； Slave从服务器在一定间隔时间内取">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-10T10:12:04.576Z">
+<meta property="og:image" content="http://yoursite.com/2019-03-16-分库分表之Mycat详解上篇/yl.png">
+<meta property="og:updated_time" content="2019-03-18T15:16:13.630Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Netty笔记整理之Buffer">
-<meta name="twitter:description" content="Netty笔记整理之Buffer1. Buffer概述Buffer 在 java.nio 包中实现，被定义成抽象类，从而实现一组常用的方法。  我们可以将 Buffer 理解为一个数组的封装，例如 IntBuffer、CharBuffer、ByteBuffer 等分别对应 int[]、char[]、byte[] 等。 MappedByteBuffer 用于实现内存映射文件，不是本文关注的重点。因此">
+<meta name="twitter:title" content="分库分表之mycat详解上篇">
+<meta name="twitter:description" content="为什么要分库分表？产生性能瓶颈原因：  单表数据量大 数据库连接 硬件资源（QPS/TPS）  解决方案 读写分离：区分读和写多数据源的数据存储和加载方式 分库分表：对数据库表进行拆分，用分片的方式对数据进行管理  Mycat原理介绍Mycat是基于binlog的主从复制原理。   Master主服务器将数据发生变化的操作记录到二进制文件Binarylog中； Slave从服务器在一定间隔时间内取">
+<meta name="twitter:image" content="http://yoursite.com/2019-03-16-分库分表之Mycat详解上篇/yl.png">
 
 
 
@@ -122,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/01/10/Netty笔记整理之Buffer/">
+  <link rel="canonical" href="http://yoursite.com/2019/03/16/分库分表之Mycat详解上篇/">
 
 
 
 
 
-  <title>Netty笔记整理之Buffer | 一个人的独奏</title>
+  <title>分库分表之mycat详解上篇 | 一个人的独奏</title>
   
 
 
@@ -259,7 +261,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/10/Netty笔记整理之Buffer/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/16/分库分表之Mycat详解上篇/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="William">
@@ -276,7 +278,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Netty笔记整理之Buffer</h1>
+          <h1 class="post-title" itemprop="name headline">分库分表之mycat详解上篇</h1>
         
 
         <div class="post-meta">
@@ -288,8 +290,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-10T18:02:20+08:00">
-                2019-01-10
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-16T18:09:35+08:00">
+                2019-03-16
               </time>
             
 
@@ -326,12 +328,32 @@
       
 
       
-        <h3 id="Netty笔记整理之Buffer"><a href="#Netty笔记整理之Buffer" class="headerlink" title="Netty笔记整理之Buffer"></a>Netty笔记整理之Buffer</h3><h4 id="1-Buffer概述"><a href="#1-Buffer概述" class="headerlink" title="1. Buffer概述"></a>1. Buffer概述</h4><p>Buffer 在 <code>java.nio</code> 包中实现，被定义成<strong>抽象类</strong>，从而实现一组常用的方法。</p>
+        <h4 id="为什么要分库分表？"><a href="#为什么要分库分表？" class="headerlink" title="为什么要分库分表？"></a>为什么要分库分表？</h4><p>产生性能瓶颈原因：</p>
 <ul>
-<li>我们可以将 Buffer 理解为<strong>一个数组的封装</strong>，例如 IntBuffer、CharBuffer、ByteBuffer 等分别对应 <code>int[]</code>、<code>char[]</code>、<code>byte[]</code> 等。</li>
-<li>MappedByteBuffer 用于实现内存映射文件，不是本文关注的重点。因此，感兴趣的胖友，可以自己 Google 了解，还是蛮有趣的。</li>
+<li>单表数据量大</li>
+<li>数据库连接</li>
+<li>硬件资源（QPS/TPS）</li>
 </ul>
-<h4 id="2-Buffer"><a href="#2-Buffer" class="headerlink" title="2. Buffer"></a>2. Buffer</h4>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><ul>
+<li>读写分离：区分读和写多数据源的数据存储和加载方式</li>
+<li>分库分表：对数据库表进行拆分，用分片的方式对数据进行管理</li>
+</ul>
+<h4 id="Mycat原理介绍"><a href="#Mycat原理介绍" class="headerlink" title="Mycat原理介绍"></a>Mycat原理介绍</h4><p>Mycat是基于<code>binlog</code>的主从复制原理。</p>
+<p><img src="/2019-03-16-分库分表之Mycat详解上篇/yl.png" alt=""></p>
+<ol>
+<li>Master主服务器将数据发生变化的操作记录到二进制文件<code>Binarylog</code>中；</li>
+<li>Slave从服务器在一定间隔时间内取探测<code>Binarylog</code>文件是否发生改变，如果发生改变，就I/O线程请求Master二进制事件；</li>
+<li>Master主服务器为每个I/线程开启一个dump线程，向其发送二进制事件；</li>
+<li>Slave从服务器将接受到的文件写到中继日志文件<code>Relaylog</code>中；</li>
+<li>最后Slave从服务器启动SQL线程读取中继日志的文件，匹配自己的配置，将需要执行的数据执行一便从而达到复制数据的目的。</li>
+</ol>
+<h4 id="Mycat配置介绍"><a href="#Mycat配置介绍" class="headerlink" title="Mycat配置介绍"></a>Mycat配置介绍</h4><ol>
+<li>sechema.xml ：配置 <code>MyCAT</code> 的逻辑库、表、数据节点、数据源；</li>
+<li>server.xml：配置启动参数；</li>
+<li>rule.xml：配置分片规则；</li>
+<li>wrapper.xml：配置JVM内核调整。</li>
+</ol>
+
       
     </div>
     
@@ -348,7 +370,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Netty/" rel="tag"># Netty</a>
+            <a href="/tags/mycat/" rel="tag"># mycat</a>
           
         </div>
       
@@ -361,8 +383,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/07/Netty框架整理之JAVA IO模型/" rel="next" title="Netty框架整理之JAVA I/O模型">
-                <i class="fa fa-chevron-left"></i> Netty框架整理之JAVA I/O模型
+              <a href="/2019/03/12/SpringCloud学习之路配置管理/" rel="next" title="SpringCloud学习之路配置管理">
+                <i class="fa fa-chevron-left"></i> SpringCloud学习之路配置管理
               </a>
             
           </div>
@@ -370,10 +392,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/01/16/Netty笔记整理之Selector/" rel="prev" title="Netty笔记整理之Selector">
-                Netty笔记整理之Selector <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -514,7 +532,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Netty笔记整理之Buffer"><span class="nav-number">1.</span> <span class="nav-text">Netty笔记整理之Buffer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Buffer概述"><span class="nav-number">1.1.</span> <span class="nav-text">1. Buffer概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Buffer"><span class="nav-number">1.2.</span> <span class="nav-text">2. Buffer</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么要分库分表？"><span class="nav-number">1.</span> <span class="nav-text">为什么要分库分表？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解决方案"><span class="nav-number">2.</span> <span class="nav-text">解决方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mycat原理介绍"><span class="nav-number">3.</span> <span class="nav-text">Mycat原理介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mycat配置介绍"><span class="nav-number">4.</span> <span class="nav-text">Mycat配置介绍</span></a></li></ol></div>
             
 
           </div>
