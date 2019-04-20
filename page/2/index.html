@@ -259,6 +259,457 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/15/Elasticsearch检索DSL语句之term-query/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/15/Elasticsearch检索DSL语句之term-query/" itemprop="url">Elasticsearch检索DSL语句之term query</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-15T17:34:54+08:00">
+                2019-02-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Elasticsearch检索DSL语句之term-query"><a href="#Elasticsearch检索DSL语句之term-query" class="headerlink" title="Elasticsearch检索DSL语句之term query"></a>Elasticsearch检索DSL语句之term query</h3><p>####1. 精确查询</p>
+<p>#####1.1 term查询</p>
+<p>term过滤器常用来处理数字、布尔值、日期和文本。</p>
+<pre><code class="json">GET /library/books/_search
+{
+  &quot;query&quot;: {
+      &quot;term&quot;: {
+        &quot;title&quot;: &quot;mysql&quot;
+      }
+  }
+}
+</code></pre>
+<p>通常当查找一个精确值的时候，我们不希望对查询进行评分计算。只希望对文档进行包括或排除的计算，所以我们会使用 <code>constant_score</code> 查询以非评分模式来执行 <code>term</code> 查询并以一作为统一评分。</p>
+<pre><code class="json">GET /library/books/_search
+{
+  &quot;query&quot;: {
+    &quot;constant_score&quot;: {
+      &quot;filter&quot;: {
+        &quot;term&quot;: {
+          &quot;title&quot;: &quot;mysql&quot;
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>term查询会使用小写。</p>
+<p>如果我们想精确查找？</p>
+<h5 id="1-2-精确查找短语"><a href="#1-2-精确查找短语" class="headerlink" title="1.2 精确查找短语"></a>1.2 精确查找短语</h5><pre><code class="json">#重新创建一个索引映射
+PUT lib
+{
+  &quot;mappings&quot;: {
+    &quot;book&quot;: {
+      &quot;properties&quot;: {
+        &quot;full_text&quot;: {
+          &quot;type&quot;:  &quot;text&quot;     #text类型会进行分词
+        },
+        &quot;exact_value&quot;: {
+          &quot;type&quot;:  &quot;keyword&quot; # keyword关键词类型不会进行分词
+        }
+      }
+    }
+  }
+}
+
+# 插入一条文档数据
+POST /lib/book/1
+{
+  &quot;full_text&quot;:   &quot;Elasticsearch in action&quot;, 
+  &quot;exact_value&quot;: &quot;Elasticsearch in action&quot;  
+}
+
+#依次执行以下查询发现有什么区别
+GET lib/book/_search
+{
+  &quot;query&quot;: {
+    &quot;term&quot;: {
+      &quot;exact_value&quot;: &quot;Elasticsearch in action&quot; 
+    }
+  }
+}
+
+GET lib/book/_search
+{
+  &quot;query&quot;: {
+    &quot;term&quot;: {
+      &quot;exact_value&quot;: &quot;Elasticsearch&quot; 
+    }
+  }
+}
+
+GET lib/book/_search
+{
+  &quot;query&quot;: {
+    &quot;term&quot;: {
+      &quot;full_text&quot;: &quot;Elasticsearch&quot; 
+    }
+  }
+}
+
+GET lib/book/_search
+{
+  &quot;query&quot;: {
+    &quot;term&quot;: {
+      &quot;full_text&quot;: &quot;elasticsearch&quot; 
+    }
+  }
+}
+</code></pre>
+<h4 id="2-组合过滤器"><a href="#2-组合过滤器" class="headerlink" title="2. 组合过滤器"></a>2. 组合过滤器</h4><p>通常情况下我们查询是复杂的多个条件查询，这时需要使用复合过滤器，可以接受多个其他类型的过滤器作为参数</p>
+<p>#####2.1 布尔查询</p>
+<p>布尔<code>bool</code>过滤器有三部分组成：</p>
+<pre><code class="json">{
+   &quot;bool&quot; : {
+      &quot;must&quot; :     [],
+      &quot;should&quot; :   [],
+      &quot;must_not&quot; : [],
+   }
+}
+</code></pre>
+<p> 过滤查询已被弃用,使用 query/bool/must   query/bool/filter等进行查询。</p>
+<pre><code class="json">GET /library/books/_search
+{
+   &quot;query&quot; : {
+        &quot;bool&quot; : {
+          &quot;must&quot;: [
+            {
+              &quot;term&quot; : {&quot;author&quot;: &quot;william&quot;}
+            }
+          ], 
+          &quot;should&quot; : [
+             { &quot;term&quot; : {&quot;edition&quot; : 3}}, 
+             { &quot;term&quot; : {&quot;type&quot; : &quot;java&quot;}} 
+          ],
+          &quot;must_not&quot; : {
+             &quot;term&quot; : {&quot;edition&quot; : 2} 
+          }
+       }
+   }
+}
+
+GET /library/books/_search
+{
+   &quot;query&quot; : {
+        &quot;bool&quot; : {
+          &quot;should&quot; : [
+             { &quot;term&quot; : {&quot;edition&quot; : 3}}, 
+             { &quot;term&quot; : {&quot;type&quot; : &quot;java&quot;}} 
+          ],
+          &quot;must_not&quot; : {
+             &quot;term&quot; : {&quot;edition&quot; : 2} 
+          },
+          &quot;filter&quot;: {
+              &quot;term&quot; : {
+                   &quot;author&quot;: &quot;william&quot;
+              }
+          }
+
+       }
+   }
+}
+</code></pre>
+<h5 id="2-2-嵌套布尔查询"><a href="#2-2-嵌套布尔查询" class="headerlink" title="2.2 嵌套布尔查询"></a>2.2 嵌套布尔查询</h5><p>我们来看看下面的sql查询：</p>
+<pre><code class="mysql">SELECT document FROM books
+WHERE  type = &quot;mysql&quot;
+OR ( type = &quot;java&quot; AND edition = 4 )
+</code></pre>
+<p>对于这种查询场景需要我们用到嵌套布尔查询，DSL语句如下：</p>
+<pre><code class="json">GET /library/books/_search
+{
+   &quot;query&quot; : {
+      &quot;bool&quot; : {
+        &quot;should&quot; : [
+          { &quot;term&quot; : {&quot;type&quot; : &quot;mysql&quot;}},
+          { &quot;bool&quot; : { 
+            &quot;must&quot; : [
+              {
+                &quot;term&quot; : {&quot;type&quot;:&quot;java&quot;}
+              }, 
+              { &quot;term&quot; : {&quot;edition&quot; : 4}} 
+            ]
+          }}
+        ]
+     }
+   }
+}
+</code></pre>
+<h4 id="3-查询多个精确值"><a href="#3-查询多个精确值" class="headerlink" title="3. 查询多个精确值"></a>3. 查询多个精确值</h4><p>#####3.1 terms查询</p>
+<p>想要精确查询多个值可以使用<code>terms</code>查询。</p>
+<pre><code class="json">GET /library/books/_search
+{
+    &quot;query&quot; : {
+        &quot;terms&quot;: {
+          &quot;type&quot;: [&quot;spring&quot;,&quot;java&quot;]
+        }
+    }
+}
+</code></pre>
+<h4 id="4-范围查询"><a href="#4-范围查询" class="headerlink" title="4. 范围查询"></a>4. 范围查询</h4><p>#####4.1 range范围查询</p>
+<p>对于范围过滤我们可以使用<code>Elasticsearch</code>中的<strong>range</strong>，提供的组合选项有：<strong>gt</strong>、<strong>lt</strong>、<strong>gte</strong>、<strong>lte</strong>，顾名思义，不解释了。</p>
+<pre><code class="json">GET /library/books/_search
+{
+    &quot;query&quot; : {
+      &quot;bool&quot;: {
+        &quot;must&quot;:{
+          &quot;range&quot;:{
+            &quot;publishDate&quot;:{
+              &quot;gte&quot;:&quot;2010-01-01&quot;,
+              &quot;lte&quot;:&quot;2010-12-01&quot;
+            }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>更多日期计算请参考：<a href="https://www.elastic.co/guide/en/elasticsearch/reference/5.6/mapping-date-format.html" target="_blank" rel="noopener">时间格式参考文档</a></p>
+<h4 id="5-前缀查询"><a href="#5-前缀查询" class="headerlink" title="5. 前缀查询"></a>5. 前缀查询</h4><p>#####5.1 prdfix query</p>
+<pre><code class="json">GET /library/books/_search
+{ 
+  &quot;query&quot;: 
+   {
+        &quot;prefix&quot; : { &quot;title&quot; : &quot;java&quot; }
+  }
+}
+</code></pre>
+<h4 id="6-模糊查询"><a href="#6-模糊查询" class="headerlink" title="6. 模糊查询"></a>6. 模糊查询</h4><h5 id="6-1-wildcard模糊查询"><a href="#6-1-wildcard模糊查询" class="headerlink" title="6.1 wildcard模糊查询"></a>6.1 wildcard模糊查询</h5><pre><code class="json">GET /library/books/_search
+{ 
+  &quot;query&quot;: {
+    &quot;wildcard&quot; : { &quot;title&quot; : &quot;python*&quot; }
+  }
+}
+</code></pre>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Netty笔记整理之EventLoopGroup/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/25/Netty笔记整理之EventLoopGroup/" itemprop="url">Netty笔记整理之EventLoopGroup</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-25T18:45:20+08:00">
+                2019-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/16/Netty笔记整理之Reactor模型/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1300,244 +1751,6 @@ public abstract class SelectionKey {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/ES之聚合查询/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/29/ES之聚合查询/" itemprop="url">ES之聚合查询</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-29T16:32:08+08:00">
-                2018-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/Spring之IOC依赖注入细节分析/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/29/Spring之IOC依赖注入细节分析/" itemprop="url">Spring之IOC依赖注入细节分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-29T16:30:19+08:00">
-                2018-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1590,7 +1803,7 @@ public abstract class SelectionKey {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-count">47</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1601,7 +1814,7 @@ public abstract class SelectionKey {
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -1612,7 +1825,7 @@ public abstract class SelectionKey {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
