@@ -259,6 +259,304 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/19/Elasticsearch检索DSL语句之match-query/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/19/Elasticsearch检索DSL语句之match-query/" itemprop="url">Elasticsearch检索DSL语句之match query</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-19T17:36:18+08:00">
+                2019-02-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Elasticsearch检索DSL语句之match-query"><a href="#Elasticsearch检索DSL语句之match-query" class="headerlink" title="Elasticsearch检索DSL语句之match query"></a>Elasticsearch检索DSL语句之match query</h3><h4 id="1-filter过滤器"><a href="#1-filter过滤器" class="headerlink" title="1. filter过滤器"></a>1. filter过滤器</h4><h5 id="1-1-query与filter比较"><a href="#1-1-query与filter比较" class="headerlink" title="1.1 query与filter比较"></a>1.1 query与filter比较</h5><p>查询DSL分为两种：一种是query DSL，一种是filter DSL。两种不同的上下文环境目的不同。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">query</th>
+<th style="text-align:center">filter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">relevance</td>
+<td style="text-align:center">boolean  yes/no</td>
+</tr>
+<tr>
+<td style="text-align:center">full text</td>
+<td style="text-align:center">exact values</td>
+</tr>
+<tr>
+<td style="text-align:center">not cached</td>
+<td style="text-align:center">cached</td>
+</tr>
+<tr>
+<td style="text-align:center">slower</td>
+<td style="text-align:center">faster</td>
+</tr>
+</tbody>
+</table>
+<p><code>query</code>：不仅要进行full  text  search，还要进行相关性评分，更倾向检索文档的匹配程度。</p>
+<p><code>filter</code>：主要进行精确查询过滤，对检索文档是否匹配。</p>
+<p>触发<code>filter</code>上下文有三种条件：</p>
+<ul>
+<li><p>在bool查询中指定filter参数或者must_not参数；</p>
+</li>
+<li><p>在 constant_score查询中指定filter参数；</p>
+</li>
+<li><p>filter aggregation，即filter聚合查询；</p>
+</li>
+</ul>
+<h4 id="2-match-all-query"><a href="#2-match-all-query" class="headerlink" title="2. match all query"></a>2. match all query</h4><h5 id="2-1-match-all"><a href="#2-1-match-all" class="headerlink" title="2.1 match_all"></a>2.1 match_all</h5><pre><code class="json">GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;match_all&quot;: {}
+    }
+}
+#设置评分 boost
+GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;match_all&quot;: { &quot;boost&quot; : 1.0 }
+    }
+}
+</code></pre>
+<h4 id="3-Full-text-queries"><a href="#3-Full-text-queries" class="headerlink" title="3. Full text queries"></a>3. Full text queries</h4><h5 id="3-1-match-query"><a href="#3-1-match-query" class="headerlink" title="3.1 match query"></a>3.1 match query</h5><pre><code class="json">GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;match&quot; : {
+            &quot;title&quot; : {
+                &quot;query&quot; : &quot;java&quot;
+            }
+        }
+    }
+}
+
+#使用模糊匹配，&quot;fuzziness&quot;: &quot;AUTO&quot;
+GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;match&quot; : {
+            &quot;title&quot; : {
+                &quot;query&quot; : &quot;javas&quot;,
+                &quot;fuzziness&quot;: &quot;AUTO&quot;
+            }
+        }
+    }
+}
+</code></pre>
+<h5 id="3-2-match-phrase短语查询"><a href="#3-2-match-phrase短语查询" class="headerlink" title="3.2 match_phrase短语查询"></a>3.2 match_phrase短语查询</h5><pre><code class="json">#match_phrase短语查询
+{
+    &quot;query&quot;: {
+        &quot;match&quot; : {
+            &quot;title&quot; : {
+              &quot;query&quot;: &quot;Elastic search&quot;
+            } 
+        }
+    }
+}
+
+#slop参数告诉match_phrase查询词条之间相隔多远时仍然将文档视为匹配。一个词为一个slop，默认slop为0
+GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;match_phrase&quot; : {
+            &quot;title&quot; : {
+              &quot;query&quot;: &quot;Elastic search java&quot;,
+              &quot;slop&quot;:3
+
+            }
+
+        }
+    }
+}
+</code></pre>
+<h5 id="3-3-match-phrase-prefix前缀匹配查询"><a href="#3-3-match-phrase-prefix前缀匹配查询" class="headerlink" title="3.3 match_phrase_prefix前缀匹配查询"></a>3.3 match_phrase_prefix前缀匹配查询</h5><pre><code class="json">GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;match_phrase_prefix&quot; : {
+            &quot;title&quot; : &quot;java高&quot;
+        }
+    }
+}
+
+GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;match_phrase_prefix&quot; : {
+            &quot;title&quot; : {
+              &quot;query&quot;: &quot;Elastic search java&quot;,
+              &quot;slop&quot;:3,
+              &quot;max_expansions&quot; : 50
+            } 
+        }
+    }
+}
+</code></pre>
+<h5 id="3-4-muti-match-query-多字段匹配查询"><a href="#3-4-muti-match-query-多字段匹配查询" class="headerlink" title="3.4 muti match query 多字段匹配查询"></a>3.4 muti match query 多字段匹配查询</h5><p>multi_match 匹配查询多个字段</p>
+<pre><code class="json">GET /library/books/_search
+{
+  &quot;query&quot;: {
+    &quot;multi_match&quot; : {
+      &quot;query&quot;:    &quot;java&quot;, 
+      &quot;fields&quot;: [ &quot;title&quot;, &quot;type&quot; ] 
+    }
+  }
+}
+#支持正则匹配多个字段
+GET /library/books/_search
+{
+  &quot;query&quot;: {
+    &quot;multi_match&quot; : {
+      &quot;query&quot;:    &quot;java&quot;, 
+      &quot;fields&quot;: [ &quot;t*&quot;, &quot;author&quot; ] 
+    }
+  }
+}
+</code></pre>
+<p><code>multi_match</code>查询内部执行方式取决于<code>type</code>参数</p>
+<p>type可以选择有：<code>best_fields</code>、<code>most_fields</code>、<code>cross_fields</code>、<code>phrase</code>、<code>phrase_prefix</code>。</p>
+<pre><code class="json">GET /library/books/_search
+{
+  &quot;query&quot;: {
+    &quot;multi_match&quot; : {
+      &quot;query&quot;:      &quot;java&quot;,
+      &quot;type&quot;:       &quot;most_fields&quot;,
+      &quot;fields&quot;: [  &quot;type&quot;,&quot;title&quot; ] 
+    }
+  }
+}
+</code></pre>
+<h4 id="4-query-string"><a href="#4-query-string" class="headerlink" title="4. query string"></a>4. query string</h4><h5 id="4-1-query-string"><a href="#4-1-query-string" class="headerlink" title="4.1 query string"></a>4.1 query string</h5><pre><code class="json">GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;query_string&quot; : {
+            &quot;default_field&quot; : &quot;title&quot;,
+            &quot;query&quot; : &quot;(java) OR (mysql)&quot; 
+        }
+    }
+}
+
+#mutli fields
+GET /library/books/_search
+{
+    &quot;query&quot;: {
+        &quot;query_string&quot; : {
+            &quot;fields&quot; : [&quot;title&quot;, &quot;type&quot;],
+            &quot;query&quot; : &quot;java&quot;
+        }
+    }
+}
+</code></pre>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/15/Elasticsearch检索DSL语句之term-query/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1632,125 +1930,6 @@ public abstract class SelectionKey {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/ES之javaAPI使用01/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/29/ES之javaAPI使用01/" itemprop="url">ES之javaAPI使用01</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-29T16:33:02+08:00">
-                2018-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1803,7 +1982,7 @@ public abstract class SelectionKey {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1825,7 +2004,7 @@ public abstract class SelectionKey {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

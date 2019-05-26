@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-04-20T15:13:06.686Z</updated>
+  <updated>2019-05-26T08:08:00.947Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>zookeeper之工作原理</title>
+    <link href="http://yoursite.com/2019/05/12/zookeeper%E4%B9%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/"/>
+    <id>http://yoursite.com/2019/05/12/zookeeper之工作原理/</id>
+    <published>2019-05-12T08:57:40.000Z</published>
+    <updated>2019-05-26T08:08:00.947Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="zookeeper"><a href="#zookeeper" class="headerlink" title="zookeeper"></a>zookeeper</h3><h4 id="集群角色"><a href="#集群角色" class="headerlink" title="集群角色"></a>集群角色</h4><p>zookeeper集群角色分为以下三种：</p><ul><li>leader：是整个zookeeper集群的核心，负责集群内部各服务器的调度者 ，事物请求的唯一调度和处理者，保证集群事物处理的顺 序性。</li></ul><ul><li>follower：处理客户端非事物请求、转发事物请求给leader服务器 ，参与Leader选举的投票 ，参与事物请求 Proposal 的投票。</li><li>observer：Observer 的工作原理与 follower 角色基本一致，而它和 follower 角色唯一的不同 在于 observer 不参与任何形式的投票，只提供非事物请求服务。通常在于不影响集群事物 处理能力的前提下提升集群非事物处理的能力 。</li></ul><h4 id="zookeeper集群"><a href="#zookeeper集群" class="headerlink" title="zookeeper集群"></a>zookeeper集群</h4><p>在zookeeper中，客户端会随机连接到zookeeper集群中 的一个节点，如果是读请求，就直接从当前节点中读取数 据，如果是写请求，那么请求会被转发给leader提交事务， 然后 leader 会广播事务，只要有超过半数节点写入成功， 那么写请求就会被提交（类似2PC事务） </p><p><img src="/2019-05-12-zookeeper之工作原理/zookeeper01.png" alt=""></p><p>所有事务请求必须由一个全局唯一的服务器来协调处理，这个服务器就是 Leader 服务器，其他的服务器就是follower。leader服务器把客户端的请求转化成一个事务 Proposal（提议），并把这个 Proposal 分发给集群中的所有 Follower 服务器。之后 Leader 服务器需要等待所有Follower服务器的反馈，一旦超过半数的Follower服务器进行了正确的反馈，那么 Leader 就会再次向所有的Follower服务器发送Commit消息，要求各个follower节点对前面的一个Proposal进行提交。</p><h3 id="zookeeper工作原理"><a href="#zookeeper工作原理" class="headerlink" title="zookeeper工作原理"></a>zookeeper工作原理</h3><h4 id="ZAB协议"><a href="#ZAB协议" class="headerlink" title="ZAB协议"></a>ZAB协议</h4><p>zookeeper的核心是ZAB协议，ZAB（Zookeeper Atomic Broadcast）协议是为分布式协调服务 ZooKeeper 专门设计的一种支持崩溃恢复的原子广播协议。基于ZAB协议zookeeper来实现分布式数据一致性，保证各个Server之间数据同步。    ZAB协议包含两个模式：崩溃恢复和原子广播。</p><p>在zookeeper集群启动阶段或者leader节点出现宕机、网络中断等异常时，ZAB协议就会进入崩溃恢复模式选举出leader服务器。zookeeper选举的核心算法是<strong>paxos算法</strong>.</p><p>####崩溃恢复模式</p><p>ZAB 协议的这个基于原子广播协议的消息广播过程，在正 常情况下是没有任何问题的，但是一旦 Leader 节点崩溃， 或者由于网络问题导致 Leader 服务器失去了过半的Follower节点的联系（leader失去与过半follower节点联 系，可能是leader节点和follower节点之间产生了网络分 区，那么此时的leader不再是合法的leader了），那么就 会进入到崩溃恢复模式。在ZAB协议中，为了保证程序的 正确运行，整个恢复过程结束后需要选举出一个新的 Leader  为了使 leader 挂了后系统能正常工作，需要解决以下两 个问题：</p><ul><li>已经被处理的消息不能丢失 </li></ul><p>当 leader 收到合法数量 follower 的 ACKs 后，就向 各个 follower 广播 COMMIT 命令，同时也会在本地 执行 COMMIT 并向连接的客户端返回「成功」。但是如 果在各个 follower 在收到 COMMIT 命令前 leader 就挂了，导致剩下的服务器并没有执行都这条消息。 leader 对事务消息发起 commit 操作，但是该消息在一部分server上执行了，但是一部分server还没有收到 commit， 就已经挂了，而实际上客户端已经收到该事务消息处理成功的回执了。所以在zab协议下需要保证所有机器都要执行这个事务消息。</p><p><img src="/2019-05-12-zookeeper之工作原理/zktx.png" alt=""></p><ul><li>被丢弃的消息不能再次出现 </li></ul><p>当 leader 接收到消息请求生成 proposal 后就挂了，其他 follower 并没有收到此 proposal，因此经过恢复模式<br>重新选了 leader 后，这条消息是被跳过的。 此时，之前挂了的 leader 重新启动并注册成了 follower，他保留了<br>被跳过消息的 proposal 状态，与整个系统的状态是不一致的，需要将其删除。</p><p>如果 leader 选举算法能够保证新选举出来的 Leader 服 务器拥有集群中所有机器最高编号（ZXID最大）的事务 Proposal，那么就可以保证这个新选举出来的Leader一 定具有已经提交的提案。因为所有提案被 COMMIT 之 前必须有超过半数的 follower ACK，即必须有超过半数 节点的服务器的事务日志上有该提案的 proposal，因此，<br>只要有合法数量的节点正常工作，就必然有一个节点保 存了所有被 COMMIT 消息的 proposal 状态。</p><p>另外一个，zxid是64位，高32位是epoch编号，每经过 一次 Leader 选举产生一个新的 leader，新的 leader 会将 epoch 号+1，低 32 位是消息计数器，每接收到一条消息 这个值+1，新 leader选举后这个值重置为0.这样设计的好 处在于老的leader挂了以后重启，它不会被选举为leader， 因此此时它的 zxid 肯定小于当前新的 leader。当老的 leader 作为 follower 接入新的 leader 后，新的 leader 会 让它将所有的拥有旧的 epoch 号的未被 COMMIT 的 proposal 清除</p><h4 id="zxid说明"><a href="#zxid说明" class="headerlink" title="zxid说明"></a>zxid说明</h4><p>zxid也就是事务id，为了保证事务的顺序一致性，zookeeper 采用了递增的事 务 id 号（zxid）来标识事务。所有的提议（proposal）都 在被提出的时候加上了 zxid。实现中 zxid 是一个 64 位的 数字，它高32位是epoch（ZAB协议通过epoch编号来 区分 Leader 周期变化的策略）用来标识 leader 关系是否 改变，每次一个 leader 被选出来，它都会有一个新的 epoch=（原来的epoch+1），标识当前属于那个leader的 统治时期。低32位用于递增计数。 </p><h4 id="leader选举"><a href="#leader选举" class="headerlink" title="leader选举"></a>leader选举</h4><p>leader选举发生在：zookeeper集群启动时选举和leader服务器异常崩溃时选举。</p><h5 id="zookeeper集群启动时选举"><a href="#zookeeper集群启动时选举" class="headerlink" title="zookeeper集群启动时选举"></a>zookeeper集群启动时选举</h5><p>每个节点启动的时候状态都是 LOOKING，处于观望状态， 接下来就开始进行选主流程 进行Leader选举，至少需要两台机器（具体原因前面已经 讲过了） ，我们选取3台机器组成的服务器集群为例。在集 群初始化阶段，当有一台服务器Server1启动时，它本身是 无法进行和完成Leader选举，当第二台服务器Server2启 动时，这个时候两台机器可以相互通信，每台机器都试图 找到Leader，于是进入Leader选举过程。选举过程如下 ：</p><ol><li>每个Server发出一个投票。由于是初始情况，Server1 和 Server2 都会将自己作为 Leader 服务器来进行投 票，每次投票会包含所推举的服务器的myid和ZXID、 epoch，使用(myid, ZXID,epoch)来表示，此时Server1 的投票为(1, 0)，Server2的投票为(2, 0)，然后各自将 这个投票发给集群中其他机器。 </li><li>接受来自各个服务器的投票。集群的每个服务器收到投票后，首先判断该投票的有效性，如检查是否是本轮投票（epoch）、是否来自LOOKING状态的服务器。</li><li>处理投票。针对每一个投票，服务器都需要将别人的 投票和自己的投票进行比较，比较规则如下 <ul><li>优先检查 ZXID。ZXID 比较大的服务器优先作为 Leader </li><li>如果ZXID相同，那么就比较myid。myid较大的 服务器作为Leader服务器</li></ul></li><li>统计投票。每次投票后，服务器都会统计投票信息， 判断是否已经有过半机器接受到相同的投票信息，对 于Server1、Server2而言，都统计出集群中已经有两 台机器接受了(2, 0)的投票信息，此时便认为已经选出 了Leader。 </li><li>改变服务器状态。一旦确定了Leader，每个服务器就 会更新自己的状态，如果是Follower，那么就变更为 FOLLOWING，如果是Leader，就变更为LEADING。</li></ol><h5 id="leader服务器异常崩溃时选举"><a href="#leader服务器异常崩溃时选举" class="headerlink" title="leader服务器异常崩溃时选举"></a>leader服务器异常崩溃时选举</h5><p>当集群中的 leader 服务器出现宕机或者不可用的情况时， 那么整个集群将无法对外提供服务，而是进入新一轮的 Leader 选举，服务器运行期间的 Leader 选举和启动时期 的Leader选举基本过程是一致的。</p><ol><li>变更状态。Leader挂后，余下的非Observer服务器 都会将自己的服务器状态变更为 LOOKING，然后开 始进入Leader选举过程。 </li><li>每个Server会发出一个投票。在运行期间，每个服务 器上的ZXID可能不同，此时假定Server1的ZXID为 123，Server3的ZXID为122；在第一轮投票中，Server1 和Server3都会投自己，产生投票(1, 123)，(3, 122)， 然后各自将投票发送给集群中所有机器。接收来自各 个服务器的投票。与启动时过程相同。 </li><li>处理投票，与启动时过程相同，此时，Server1将会成为Leader。</li><li>统计投票，与启动时过程相同</li><li>改变服务器的状态，与启动时过程相同 。</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;zookeeper&quot;&gt;&lt;a href=&quot;#zookeeper&quot; class=&quot;headerlink&quot; title=&quot;zookeeper&quot;&gt;&lt;/a&gt;zookeeper&lt;/h3&gt;&lt;h4 id=&quot;集群角色&quot;&gt;&lt;a href=&quot;#集群角色&quot; class=&quot;headerli
+      
+    
+    </summary>
+    
+    
+      <category term="zookeeper" scheme="http://yoursite.com/tags/zookeeper/"/>
+    
+  </entry>
   
   <entry>
     <title>深入JVM学习之垃圾收集器回收算法</title>
@@ -358,7 +381,7 @@
     <link href="http://yoursite.com/2019/01/07/Netty%E6%A1%86%E6%9E%B6%E6%95%B4%E7%90%86%E4%B9%8BJAVA%20IO%E6%A8%A1%E5%9E%8B/"/>
     <id>http://yoursite.com/2019/01/07/Netty框架整理之JAVA IO模型/</id>
     <published>2019-01-07T11:52:17.000Z</published>
-    <updated>2019-01-07T12:05:41.967Z</updated>
+    <updated>2019-04-26T15:39:49.034Z</updated>
     
     <content type="html"><![CDATA[<h3 id="Java-I-O模型"><a href="#Java-I-O模型" class="headerlink" title="Java I/O模型"></a>Java I/O模型</h3><h4 id="1-阻塞与非阻塞"><a href="#1-阻塞与非阻塞" class="headerlink" title="1. 阻塞与非阻塞"></a>1. 阻塞与非阻塞</h4><p>在前面介绍了同步和异步的区别，这一节来看一下阻塞和非阻塞的区别。</p><p>　　阻塞就是：当某个事件或者任务在执行过程中，它发出一个请求操作，但是由于该请求操作需要的条件不满足，那么就会一直在那等待，直至条件满足；</p><p>　　非阻塞就是：当某个事件或者任务在执行过程中，它发出一个请求操作，如果该请求操作需要的条件不满足，会立即返回一个标志信息告知条件不满足，不会一直在那等待。</p><p>　　这就是阻塞和非阻塞的区别。也就是说阻塞和非阻塞的区别关键在于当发出请求一个操作时，如果条件不满足，是会一直等待还是返回一个标志信息。</p><p>　　举个简单的例子：</p><p>　　假如我要读取一个文件中的内容，如果此时文件中没有内容可读，对于同步来说就是会一直在那等待，直至文件中有内容可读；而对于非阻塞来说，就会直接返回一个标志信息告知文件中暂时无内容可读。</p><p>　　在网上有一些朋友将同步和异步分别与阻塞和非阻塞画上等号，事实上，它们是两组完全不同的概念。注意，理解这两组概念的区别对于后面IO模型的理解非常重要。</p><p>　　同步和异步着重点在于多个任务的执行过程中，一个任务的执行是否会导致整个流程的暂时等待；</p><p>　　而阻塞和非阻塞着重点在于发出一个请求操作时，如果进行操作的条件不满足是否会返会一个标志信息告知条件不满足。</p><p>　　理解阻塞和非阻塞可以同线程阻塞类比地理解，当一个线程进行一个请求操作时，如果条件不满足，则会被阻塞，即在那等待条件满足。</p><p>　在了解阻塞IO和非阻塞IO之前，先看下一个具体的IO操作过程是怎么进行的。</p><p>　　通常来说，IO操作包括：对硬盘的读写、对socket的读写以及外设的读写。</p><p>　　当用户线程发起一个IO请求操作（本文以读请求操作为例），内核会去查看要读取的数据是否就绪，对于阻塞IO来说，如果数据没有就绪，则会一直在那等待，直到数据就绪；对于非阻塞IO来说，如果数据没有就绪，则会返回一个标志信息告知用户线程当前要读的数据没有就绪。当数据就绪之后，便将数据拷贝到用户线程，这样才完成了一个完整的IO读请求操作，也就是说一个完整的IO读请求操作包括两个阶段：</p><p>　　1）查看数据是否就绪；</p><p>　　2）进行数据拷贝（内核将数据拷贝到用户线程）。</p><p>　　那么阻塞（blocking IO）和非阻塞（non-blocking IO）的区别就在于第一个阶段，如果数据没有就绪，在查看数据是否就绪的过程中是一直等待，还是直接返回一个标志信息。</p><p>　　Java中传统的IO都是阻塞IO，比如通过socket来读数据，调用read()方法之后，如果数据没有就绪，当前线程就会一直阻塞在read方法调用那里，直到有数据才返回；而如果是非阻塞IO的话，当数据没有就绪，read()方法应该返回一个标志信息，告知当前线程数据没有就绪，而不是一直在那里等待。</p><h4 id="2-同步与非同步"><a href="#2-同步与非同步" class="headerlink" title="2. 同步与非同步"></a>2. 同步与非同步</h4><p>同步和异步的概念出来已经很久了，网上有关同步和异步的说法也有很多。以下是我个人的理解：</p><p>　　同步就是：如果有多个任务或者事件要发生，这些任务或者事件必须逐个地进行，一个事件或者任务的执行会导致整个流程的暂时等待，这些事件没有办法并发地执行；</p><p>　　异步就是：如果有多个任务或者事件发生，这些事件可以并发地执行，一个事件或者任务的执行不会导致整个流程的暂时等待。</p><p>　　这就是同步和异步。举个简单的例子，假如有一个任务包括两个子任务A和B，对于同步来说，当A在执行的过程中，B只有等待，直至A执行完毕，B才能执行；而对于异步就是A和B可以并发地执行，B不必等待A执行完毕之后再执行，这样就不会由于A的执行导致整个任务的暂时等待。</p><p>　我们先来看一下同步IO和异步IO的定义，在《Unix网络编程》一书中对同步IO和异步IO的定义是这样的：</p><p>　　<strong>A synchronous I/O operation causes the requesting process to be blocked until that I/O operation completes.</strong><br>　　<strong>An asynchronous I/O operation does not cause the requesting process to be blocked.</strong></p><p>　　从字面的意思可以看出：同步IO即 如果一个线程请求进行IO操作，在IO操作完成之前，该线程会被阻塞；</p><p>　　而异步IO为 如果一个线程请求进行IO操作，IO操作不会导致请求线程被阻塞。</p><p>　　事实上，同步IO和异步IO模型是针对用户线程和内核的交互来说的：</p><p>　　对于同步IO：当用户发出IO请求操作之后，如果数据没有就绪，需要通过用户线程或者内核不断地去轮询数据是否就绪，当数据就绪时，再将数据从内核拷贝到用户线程；</p><p>　　而异步IO：只有IO请求操作的发出是由用户线程来进行的，IO操作的两个阶段都是由内核自动完成，然后发送通知告知用户线程IO操作已经完成。也就是说在异步IO中，不会对用户线程产生任何阻塞。</p><p>　　这是同步IO和异步IO关键区别所在，同步IO和异步IO的关键区别反映在数据拷贝阶段是由用户线程完成还是内核完成。所以说异步IO必须要有操作系统的底层支持。</p><p>　　注意同步IO和异步IO与阻塞IO和非阻塞IO是不同的两组概念。</p><p>　　阻塞IO和非阻塞IO是反映在当用户请求IO操作时，如果数据没有就绪，是用户线程一直等待数据就绪，还是会收到一个标志信息这一点上面的。也就是说，阻塞IO和非阻塞IO是反映在IO操作的第一个阶段，在查看数据是否就绪时是如何处理的。</p><h4 id="3-五种IO模型"><a href="#3-五种IO模型" class="headerlink" title="3. 五种IO模型"></a>3. 五种IO模型</h4>]]></content>
     
@@ -419,20 +442,6 @@
     <id>http://yoursite.com/2018/12/29/ES之快速索引原理/</id>
     <published>2018-12-29T08:35:24.000Z</published>
     <updated>2018-12-29T08:35:24.079Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>ES之javaAPI使用01</title>
-    <link href="http://yoursite.com/2018/12/29/ES%E4%B9%8BjavaAPI%E4%BD%BF%E7%94%A801/"/>
-    <id>http://yoursite.com/2018/12/29/ES之javaAPI使用01/</id>
-    <published>2018-12-29T08:33:02.000Z</published>
-    <updated>2018-12-29T08:33:02.547Z</updated>
     
     <summary type="html">
     
