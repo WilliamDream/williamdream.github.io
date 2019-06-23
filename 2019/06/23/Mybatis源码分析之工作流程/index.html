@@ -81,22 +81,22 @@
 
 
 
-<meta name="description" content="工作流程全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         String resource = &amp;quot;mybatis-config.xml&amp;quot;;         InputStream inputStrea">
+<meta name="description" content="Mybatis源码分析之工作流程 全局配置文件mybatis-config.xml解析 创建会话SqlSession 获取代理对象 调用代理对象方法执行sql  全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         Str">
 <meta name="keywords" content="mybatis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mybatis源码分析之工作流程">
 <meta property="og:url" content="http://yoursite.com/2019/06/23/Mybatis源码分析之工作流程/index.html">
 <meta property="og:site_name" content="一个人的独奏">
-<meta property="og:description" content="工作流程全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         String resource = &amp;quot;mybatis-config.xml&amp;quot;;         InputStream inputStrea">
+<meta property="og:description" content="Mybatis源码分析之工作流程 全局配置文件mybatis-config.xml解析 创建会话SqlSession 获取代理对象 调用代理对象方法执行sql  全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         Str">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/SQLSessionFactory.jpg">
 <meta property="og:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/Executor.png">
 <meta property="og:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/DefaultSqlSession.jpg">
 <meta property="og:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/getMapper.jpg">
-<meta property="og:updated_time" content="2019-06-23T07:45:55.566Z">
+<meta property="og:updated_time" content="2019-06-23T08:00:21.713Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis源码分析之工作流程">
-<meta name="twitter:description" content="工作流程全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         String resource = &amp;quot;mybatis-config.xml&amp;quot;;         InputStream inputStrea">
+<meta name="twitter:description" content="Mybatis源码分析之工作流程 全局配置文件mybatis-config.xml解析 创建会话SqlSession 获取代理对象 调用代理对象方法执行sql  全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         Str">
 <meta name="twitter:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/SQLSessionFactory.jpg">
 
 
@@ -331,7 +331,13 @@
       
 
       
-        <h3 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h3><h4 id="全局配置文件解析"><a href="#全局配置文件解析" class="headerlink" title="全局配置文件解析"></a>全局配置文件解析</h4><p>首先会解析全局配置文件<code>mybatis-config.xml</code>，下面我们来看看源码。现有下面的调用方式进行查询：</p>
+        <h3 id="Mybatis源码分析之工作流程"><a href="#Mybatis源码分析之工作流程" class="headerlink" title="Mybatis源码分析之工作流程"></a>Mybatis源码分析之工作流程</h3><ul>
+<li>全局配置文件mybatis-config.xml解析</li>
+<li>创建会话SqlSession</li>
+<li>获取代理对象</li>
+<li>调用代理对象方法执行sql</li>
+</ul>
+<h4 id="全局配置文件解析"><a href="#全局配置文件解析" class="headerlink" title="全局配置文件解析"></a>全局配置文件解析</h4><p>首先会解析全局配置文件<code>mybatis-config.xml</code>，下面我们来看看源码。现有下面的调用方式进行查询：</p>
 <pre><code class="java">public void queryBlog() throws IOException {
         String resource = &quot;mybatis-config.xml&quot;;
         InputStream inputStream = Resources.getResourceAsStream(resource);
@@ -348,6 +354,7 @@
         }
 }
 </code></pre>
+<a id="more"></a> 
 <p>我们跟进<code>SqlSessionFactoryBuilder</code>的<code>build()</code>方法：</p>
 <pre><code class="java">public SqlSessionFactory build(InputStream inputStream) {
         //调用类中重载的build方面
@@ -531,7 +538,9 @@ public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
         return Proxy.newProxyInstance(this.mapperInterface.getClassLoader(), new Class[]{this.mapperInterface}, mapperProxy);
 }
 </code></pre>
-<p>接着我们看看<strong>MapperProxy</strong>类，最后会带哦用invoke()方法。</p>
+<p>看看这部分的时序图</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/getMapper.jpg" alt=""></p>
+<h4 id="调用代理对象方法执行sql"><a href="#调用代理对象方法执行sql" class="headerlink" title="调用代理对象方法执行sql"></a>调用代理对象方法执行sql</h4><p>接着我们看看<strong>MapperProxy</strong>类，最后会调用invoke()方法。</p>
 <pre><code class="java">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
             if (Object.class.equals(method.getDeclaringClass())) {
@@ -549,8 +558,6 @@ public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
         return mapperMethod.execute(this.sqlSession, args);
 }
 </code></pre>
-<p>看看这部分的时序图</p>
-<p><img src="/2019-06-23-Mybatis源码分析之工作流程/getMapper.jpg" alt=""></p>
 
       
     </div>
@@ -730,7 +737,7 @@ public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#工作流程"><span class="nav-number">1.</span> <span class="nav-text">工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#全局配置文件解析"><span class="nav-number">1.1.</span> <span class="nav-text">全局配置文件解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建会话"><span class="nav-number">1.2.</span> <span class="nav-text">创建会话</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取代理对象"><span class="nav-number">1.3.</span> <span class="nav-text">获取代理对象</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mybatis源码分析之工作流程"><span class="nav-number">1.</span> <span class="nav-text">Mybatis源码分析之工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#全局配置文件解析"><span class="nav-number">1.1.</span> <span class="nav-text">全局配置文件解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建会话"><span class="nav-number">1.2.</span> <span class="nav-text">创建会话</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取代理对象"><span class="nav-number">1.3.</span> <span class="nav-text">获取代理对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调用代理对象方法执行sql"><span class="nav-number">1.4.</span> <span class="nav-text">调用代理对象方法执行sql</span></a></li></ol></li></ol></div>
             
 
           </div>
