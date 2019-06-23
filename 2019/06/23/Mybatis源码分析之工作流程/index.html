@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="mybatis,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="一个人的独奏" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="工作流程全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         String resource = &amp;quot;mybatis-config.xml&amp;quot;;         InputStream inputStrea">
+<meta name="keywords" content="mybatis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis源码分析之工作流程">
+<meta property="og:url" content="http://yoursite.com/2019/06/23/Mybatis源码分析之工作流程/index.html">
+<meta property="og:site_name" content="一个人的独奏">
+<meta property="og:description" content="工作流程全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         String resource = &amp;quot;mybatis-config.xml&amp;quot;;         InputStream inputStrea">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/SQLSessionFactory.jpg">
+<meta property="og:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/Executor.png">
+<meta property="og:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/DefaultSqlSession.jpg">
+<meta property="og:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/getMapper.jpg">
+<meta property="og:updated_time" content="2019-06-23T07:45:55.566Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mybatis源码分析之工作流程">
+<meta name="twitter:description" content="工作流程全局配置文件解析首先会解析全局配置文件mybatis-config.xml，下面我们来看看源码。现有下面的调用方式进行查询： public void queryBlog() throws IOException {         String resource = &amp;quot;mybatis-config.xml&amp;quot;;         InputStream inputStrea">
+<meta name="twitter:image" content="http://yoursite.com/2019-06-23-Mybatis源码分析之工作流程/SQLSessionFactory.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/23/Mybatis源码分析之工作流程/">
+
+
+
+
+
+  <title>Mybatis源码分析之工作流程 | 一个人的独奏</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+  
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/WilliamDream"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个人的独奏</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-mybatis" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/23/Mybatis源码分析之工作流程/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Mybatis源码分析之工作流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-23T12:32:50+08:00">
+                2019-06-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h3><h4 id="全局配置文件解析"><a href="#全局配置文件解析" class="headerlink" title="全局配置文件解析"></a>全局配置文件解析</h4><p>首先会解析全局配置文件<code>mybatis-config.xml</code>，下面我们来看看源码。现有下面的调用方式进行查询：</p>
+<pre><code class="java">public void queryBlog() throws IOException {
+        String resource = &quot;mybatis-config.xml&quot;;
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+
+        SqlSession session = sqlSessionFactory.openSession();
+        try {
+            BlogMapper mapper = session.getMapper(BlogMapper.class);
+            BlogExample example = new BlogExample();
+            List&lt;Blog&gt; list = mapper.selectByExample(example);
+            System.out.println(list);
+        } finally {
+            session.close();
+        }
+}
+</code></pre>
+<p>我们跟进<code>SqlSessionFactoryBuilder</code>的<code>build()</code>方法：</p>
+<pre><code class="java">public SqlSessionFactory build(InputStream inputStream) {
+        //调用类中重载的build方面
+        return this.build((InputStream)inputStream, (String)null, (Properties)null);
+}
+</code></pre>
+<pre><code class="java">public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
+        SqlSessionFactory var5;
+        try {
+            //XMLConfigBuilder它时负责解析全局配置文件的类，跟进XMLConfigBuilder类中
+            XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
+            var5 = this.build(parser.parse());
+        } catch (Exception var14) {
+            throw ExceptionFactory.wrapException(&quot;Error building SqlSession.&quot;, var14);
+        } finally {
+            ErrorContext.instance().reset();
+
+            try {
+                inputStream.close();
+            } catch (IOException var13) {
+                ;
+            }
+
+        }
+
+        return var5;
+    }
+</code></pre>
+<pre><code class="java">public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
+        this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);
+}
+//发现会new Configuration()对象
+private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+    super(new Configuration());
+    this.localReflectorFactory = new DefaultReflectorFactory();
+    ErrorContext.instance().resource(&quot;SQL Mapper Configuration&quot;);
+    this.configuration.setVariables(props);
+    this.parsed = false;
+    this.environment = environment;
+    this.parser = parser;
+}
+</code></pre>
+<p>看到new Configuration()对象时，可以猜到这个就是全局配置文件映射类。</p>
+<p>我们回到<strong>SqlSessionFactoryBuilder</strong>的<strong>build()</strong>方法。</p>
+<pre><code class="java">var5 = this.build(parser.parse());
+</code></pre>
+<p>可以看到parse()就是具体的解析配置文件的方法，继续跟进进入<strong>XMLConfigBuilder</strong></p>
+<pre><code class="java">    public Configuration parse() {
+        //判断配置文件是否已经加载，只能加载一次
+        if (this.parsed) {
+            throw new BuilderException(&quot;Each XMLConfigBuilder can only be used once.&quot;);
+        } else {
+            this.parsed = true;
+            //注意参数是mybatis-config.xml的根节点configuration
+            this.parseConfiguration(this.parser.evalNode(&quot;/configuration&quot;));
+            return this.configuration;
+        }
+    }
+
+    //看到这里，就明白了这里。下面是依次解析根节点下的一级节点
+    private void parseConfiguration(XNode root) {
+        try {
+            this.propertiesElement(root.evalNode(&quot;properties&quot;));
+            Properties settings = this.settingsAsProperties(root.evalNode(&quot;settings&quot;));
+            this.loadCustomVfs(settings);
+            this.loadCustomLogImpl(settings);
+            this.typeAliasesElement(root.evalNode(&quot;typeAliases&quot;));
+            this.pluginElement(root.evalNode(&quot;plugins&quot;));
+            this.objectFactoryElement(root.evalNode(&quot;objectFactory&quot;));
+            this.objectWrapperFactoryElement(root.evalNode(&quot;objectWrapperFactory&quot;));
+            this.reflectorFactoryElement(root.evalNode(&quot;reflectorFactory&quot;));
+            this.settingsElement(settings);
+            this.environmentsElement(root.evalNode(&quot;environments&quot;));
+            this.databaseIdProviderElement(root.evalNode(&quot;databaseIdProvider&quot;));
+            this.typeHandlerElement(root.evalNode(&quot;typeHandlers&quot;));
+            this.mapperElement(root.evalNode(&quot;mappers&quot;));
+        } catch (Exception var3) {
+            throw new BuilderException(&quot;Error parsing SQL Mapper Configuration. Cause: &quot; + var3, var3);
+        }
+    }
+</code></pre>
+<p>解析这部分我们就不细看了，就以解析<code>mappers</code>为例：可以看到会将mapper对象放入Configuration的<code>mapperRegistry</code>属性中。</p>
+<pre><code class="java">Class&lt;?&gt; mapperInterface = Resources.classForName(mapperClass);
+this.configuration.addMapper(mapperInterface);
+//再跟进看看addMapper()方法。
+public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
+        if (type.isInterface()) {
+            if (this.hasMapper(type)) {
+                throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
+            }
+
+            boolean loadCompleted = false;
+
+            try {
+                //knownMappers为HashMap，key为mapper接口类型，value为接口的工厂类。
+                this.knownMappers.put(type, new MapperProxyFactory(type));
+                MapperAnnotationBuilder parser = new MapperAnnotationBuilder(this.config, type);
+                parser.parse();
+                loadCompleted = true;
+            } finally {
+                if (!loadCompleted) {
+                    this.knownMappers.remove(type);
+                }
+
+            }
+        }
+
+    }
+</code></pre>
+<p>通过对节点的解析，然后将属性赋值给Configuration对象中的属性。解析完成后，调用build()方法。</p>
+<pre><code class="java">public SqlSessionFactory build(Configuration config) {
+        return new DefaultSqlSessionFactory(config);
+}
+</code></pre>
+<p>DefaultSqlSessionFactory是SqlSessionFactory接口的默认实现。下面通过时序图更直观的来看看：</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/SQLSessionFactory.jpg" alt=""></p>
+<h4 id="创建会话"><a href="#创建会话" class="headerlink" title="创建会话"></a>创建会话</h4><pre><code class="java">SqlSession session = sqlSessionFactory.openSession();
+</code></pre>
+<p>点进跟进查看openSession()的实现，可以在DefaultSqlSessionFactory类中看到如下方法：</p>
+<pre><code class="java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
+        Transaction tx = null;
+
+        DefaultSqlSession var8;
+        try {
+            Environment environment = this.configuration.getEnvironment();
+            TransactionFactory transactionFactory = this.getTransactionFactoryFromEnvironment(environment);
+            tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+            //执行器，Exector是直接操作数据库的接口类，
+            Executor executor = this.configuration.newExecutor(tx, execType);
+            //返回会话DefaultSqlSession
+            var8 = new DefaultSqlSession(this.configuration, executor, autoCommit);
+        } catch (Exception var12) {
+            this.closeTransaction(tx);
+            throw ExceptionFactory.wrapException(&quot;Error opening session.  Cause: &quot; + var12, var12);
+        } finally {
+            ErrorContext.instance().reset();
+        }
+
+        return var8;
+    }
+</code></pre>
+<pre><code class="java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
+        executorType = executorType == null ? this.defaultExecutorType : executorType;
+        executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
+        Object executor;
+        if (ExecutorType.BATCH == executorType) {
+            executor = new BatchExecutor(this, transaction);
+        } else if (ExecutorType.REUSE == executorType) {
+            executor = new ReuseExecutor(this, transaction);
+        } else {
+            executor = new SimpleExecutor(this, transaction);
+        }
+
+        if (this.cacheEnabled) {//是否启用二级缓存
+            executor = new CachingExecutor((Executor)executor);
+        }
+        //this.interceptorChain是插件拦截器链
+        Executor executor = (Executor)this.interceptorChain.pluginAll(executor);
+        return executor;
+    }
+</code></pre>
+<p>Executor类关系图如下：BaseExecutor为抽象类</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/Executor.png" alt=""></p>
+<p>创建会话时序图如下：</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/DefaultSqlSession.jpg" alt=""></p>
+<h4 id="获取代理对象"><a href="#获取代理对象" class="headerlink" title="获取代理对象"></a>获取代理对象</h4><p>会话创建完成后，接下来我们继续看看如何通过getMapper()获得mapper接口的。</p>
+<pre><code class="java">BlogMapper mapper = session.getMapper(BlogMapper.class);
+</code></pre>
+<p>点进跟进，在DefaultSqlSession类中。</p>
+<pre><code class="java">public &lt;T&gt; T getMapper(Class&lt;T&gt; type) {
+        return this.configuration.getMapper(type, this);
+}
+</code></pre>
+<p>然后从Configuration配置对象的<code>mapperRegistry</code>属性中取出，在前面第一步解析配置文件是，将mapper接口放入了HashMap中。</p>
+<pre><code class="java">public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+        return this.mapperRegistry.getMapper(type, sqlSession);
+}
+</code></pre>
+<p>继续跟进源码，在MapperProxyFactory类中发现了，看到如下代码，就豁然开朗了，这是JDK动态代理的实现啊，也就是最后返回了代理对象。</p>
+<pre><code class="java">protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) {
+        return Proxy.newProxyInstance(this.mapperInterface.getClassLoader(), new Class[]{this.mapperInterface}, mapperProxy);
+}
+</code></pre>
+<p>接着我们看看<strong>MapperProxy</strong>类，最后会带哦用invoke()方法。</p>
+<pre><code class="java">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        try {
+            if (Object.class.equals(method.getDeclaringClass())) {
+                return method.invoke(this, args);
+            }
+
+            if (this.isDefaultMethod(method)) {
+                return this.invokeDefaultMethod(proxy, method, args);
+            }
+        } catch (Throwable var5) {
+            throw ExceptionUtil.unwrapThrowable(var5);
+        }
+
+        MapperMethod mapperMethod = this.cachedMapperMethod(method);
+        return mapperMethod.execute(this.sqlSession, args);
+}
+</code></pre>
+<p>看看这部分的时序图</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/getMapper.jpg" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mybatis/" rel="tag"># mybatis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/30/Mysql读书笔记之存储引擎/" rel="next" title="Mysql读书笔记之存储引擎">
+                <i class="fa fa-chevron-left"></i> Mysql读书笔记之存储引擎
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/upload/image/head.jpg" alt="William">
+            
+              <p class="site-author-name" itemprop="name">William</p>
+              <p class="site-description motion-element" itemprop="description">你不笨，只是你很懒。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#工作流程"><span class="nav-number">1.</span> <span class="nav-text">工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#全局配置文件解析"><span class="nav-number">1.1.</span> <span class="nav-text">全局配置文件解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建会话"><span class="nav-number">1.2.</span> <span class="nav-text">创建会话</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取代理对象"><span class="nav-number">1.3.</span> <span class="nav-text">获取代理对象</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">William</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

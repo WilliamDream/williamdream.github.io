@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-05-26T08:28:13.574Z</updated>
+  <updated>2019-06-23T07:45:55.566Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,66 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Mybatis源码分析之工作流程</title>
+    <link href="http://yoursite.com/2019/06/23/Mybatis%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E4%B9%8B%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/"/>
+    <id>http://yoursite.com/2019/06/23/Mybatis源码分析之工作流程/</id>
+    <published>2019-06-23T04:32:50.000Z</published>
+    <updated>2019-06-23T07:45:55.566Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h3><h4 id="全局配置文件解析"><a href="#全局配置文件解析" class="headerlink" title="全局配置文件解析"></a>全局配置文件解析</h4><p>首先会解析全局配置文件<code>mybatis-config.xml</code>，下面我们来看看源码。现有下面的调用方式进行查询：</p><pre><code class="java">public void queryBlog() throws IOException {        String resource = &quot;mybatis-config.xml&quot;;        InputStream inputStream = Resources.getResourceAsStream(resource);        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);        SqlSession session = sqlSessionFactory.openSession();        try {            BlogMapper mapper = session.getMapper(BlogMapper.class);            BlogExample example = new BlogExample();            List&lt;Blog&gt; list = mapper.selectByExample(example);            System.out.println(list);        } finally {            session.close();        }}</code></pre><p>我们跟进<code>SqlSessionFactoryBuilder</code>的<code>build()</code>方法：</p><pre><code class="java">public SqlSessionFactory build(InputStream inputStream) {        //调用类中重载的build方面        return this.build((InputStream)inputStream, (String)null, (Properties)null);}</code></pre><pre><code class="java">public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {        SqlSessionFactory var5;        try {            //XMLConfigBuilder它时负责解析全局配置文件的类，跟进XMLConfigBuilder类中            XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);            var5 = this.build(parser.parse());        } catch (Exception var14) {            throw ExceptionFactory.wrapException(&quot;Error building SqlSession.&quot;, var14);        } finally {            ErrorContext.instance().reset();            try {                inputStream.close();            } catch (IOException var13) {                ;            }        }        return var5;    }</code></pre><pre><code class="java">public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {        this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);}//发现会new Configuration()对象private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {    super(new Configuration());    this.localReflectorFactory = new DefaultReflectorFactory();    ErrorContext.instance().resource(&quot;SQL Mapper Configuration&quot;);    this.configuration.setVariables(props);    this.parsed = false;    this.environment = environment;    this.parser = parser;}</code></pre><p>看到new Configuration()对象时，可以猜到这个就是全局配置文件映射类。</p><p>我们回到<strong>SqlSessionFactoryBuilder</strong>的<strong>build()</strong>方法。</p><pre><code class="java">var5 = this.build(parser.parse());</code></pre><p>可以看到parse()就是具体的解析配置文件的方法，继续跟进进入<strong>XMLConfigBuilder</strong></p><pre><code class="java">    public Configuration parse() {        //判断配置文件是否已经加载，只能加载一次        if (this.parsed) {            throw new BuilderException(&quot;Each XMLConfigBuilder can only be used once.&quot;);        } else {            this.parsed = true;            //注意参数是mybatis-config.xml的根节点configuration            this.parseConfiguration(this.parser.evalNode(&quot;/configuration&quot;));            return this.configuration;        }    }    //看到这里，就明白了这里。下面是依次解析根节点下的一级节点    private void parseConfiguration(XNode root) {        try {            this.propertiesElement(root.evalNode(&quot;properties&quot;));            Properties settings = this.settingsAsProperties(root.evalNode(&quot;settings&quot;));            this.loadCustomVfs(settings);            this.loadCustomLogImpl(settings);            this.typeAliasesElement(root.evalNode(&quot;typeAliases&quot;));            this.pluginElement(root.evalNode(&quot;plugins&quot;));            this.objectFactoryElement(root.evalNode(&quot;objectFactory&quot;));            this.objectWrapperFactoryElement(root.evalNode(&quot;objectWrapperFactory&quot;));            this.reflectorFactoryElement(root.evalNode(&quot;reflectorFactory&quot;));            this.settingsElement(settings);            this.environmentsElement(root.evalNode(&quot;environments&quot;));            this.databaseIdProviderElement(root.evalNode(&quot;databaseIdProvider&quot;));            this.typeHandlerElement(root.evalNode(&quot;typeHandlers&quot;));            this.mapperElement(root.evalNode(&quot;mappers&quot;));        } catch (Exception var3) {            throw new BuilderException(&quot;Error parsing SQL Mapper Configuration. Cause: &quot; + var3, var3);        }    }</code></pre><p>解析这部分我们就不细看了，就以解析<code>mappers</code>为例：可以看到会将mapper对象放入Configuration的<code>mapperRegistry</code>属性中。</p><pre><code class="java">Class&lt;?&gt; mapperInterface = Resources.classForName(mapperClass);this.configuration.addMapper(mapperInterface);//再跟进看看addMapper()方法。public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {        if (type.isInterface()) {            if (this.hasMapper(type)) {                throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);            }            boolean loadCompleted = false;            try {                //knownMappers为HashMap，key为mapper接口类型，value为接口的工厂类。                this.knownMappers.put(type, new MapperProxyFactory(type));                MapperAnnotationBuilder parser = new MapperAnnotationBuilder(this.config, type);                parser.parse();                loadCompleted = true;            } finally {                if (!loadCompleted) {                    this.knownMappers.remove(type);                }            }        }    }</code></pre><p>通过对节点的解析，然后将属性赋值给Configuration对象中的属性。解析完成后，调用build()方法。</p><pre><code class="java">public SqlSessionFactory build(Configuration config) {        return new DefaultSqlSessionFactory(config);}</code></pre><p>DefaultSqlSessionFactory是SqlSessionFactory接口的默认实现。下面通过时序图更直观的来看看：</p><p><img src="/2019-06-23-Mybatis源码分析之工作流程/SQLSessionFactory.jpg" alt=""></p><h4 id="创建会话"><a href="#创建会话" class="headerlink" title="创建会话"></a>创建会话</h4><pre><code class="java">SqlSession session = sqlSessionFactory.openSession();</code></pre><p>点进跟进查看openSession()的实现，可以在DefaultSqlSessionFactory类中看到如下方法：</p><pre><code class="java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {        Transaction tx = null;        DefaultSqlSession var8;        try {            Environment environment = this.configuration.getEnvironment();            TransactionFactory transactionFactory = this.getTransactionFactoryFromEnvironment(environment);            tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);            //执行器，Exector是直接操作数据库的接口类，            Executor executor = this.configuration.newExecutor(tx, execType);            //返回会话DefaultSqlSession            var8 = new DefaultSqlSession(this.configuration, executor, autoCommit);        } catch (Exception var12) {            this.closeTransaction(tx);            throw ExceptionFactory.wrapException(&quot;Error opening session.  Cause: &quot; + var12, var12);        } finally {            ErrorContext.instance().reset();        }        return var8;    }</code></pre><pre><code class="java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {        executorType = executorType == null ? this.defaultExecutorType : executorType;        executorType = executorType == null ? ExecutorType.SIMPLE : executorType;        Object executor;        if (ExecutorType.BATCH == executorType) {            executor = new BatchExecutor(this, transaction);        } else if (ExecutorType.REUSE == executorType) {            executor = new ReuseExecutor(this, transaction);        } else {            executor = new SimpleExecutor(this, transaction);        }        if (this.cacheEnabled) {//是否启用二级缓存            executor = new CachingExecutor((Executor)executor);        }        //this.interceptorChain是插件拦截器链        Executor executor = (Executor)this.interceptorChain.pluginAll(executor);        return executor;    }</code></pre><p>Executor类关系图如下：BaseExecutor为抽象类</p><p><img src="/2019-06-23-Mybatis源码分析之工作流程/Executor.png" alt=""></p><p>创建会话时序图如下：</p><p><img src="/2019-06-23-Mybatis源码分析之工作流程/DefaultSqlSession.jpg" alt=""></p><h4 id="获取代理对象"><a href="#获取代理对象" class="headerlink" title="获取代理对象"></a>获取代理对象</h4><p>会话创建完成后，接下来我们继续看看如何通过getMapper()获得mapper接口的。</p><pre><code class="java">BlogMapper mapper = session.getMapper(BlogMapper.class);</code></pre><p>点进跟进，在DefaultSqlSession类中。</p><pre><code class="java">public &lt;T&gt; T getMapper(Class&lt;T&gt; type) {        return this.configuration.getMapper(type, this);}</code></pre><p>然后从Configuration配置对象的<code>mapperRegistry</code>属性中取出，在前面第一步解析配置文件是，将mapper接口放入了HashMap中。</p><pre><code class="java">public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {        return this.mapperRegistry.getMapper(type, sqlSession);}</code></pre><p>继续跟进源码，在MapperProxyFactory类中发现了，看到如下代码，就豁然开朗了，这是JDK动态代理的实现啊，也就是最后返回了代理对象。</p><pre><code class="java">protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) {        return Proxy.newProxyInstance(this.mapperInterface.getClassLoader(), new Class[]{this.mapperInterface}, mapperProxy);}</code></pre><p>接着我们看看<strong>MapperProxy</strong>类，最后会带哦用invoke()方法。</p><pre><code class="java">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {        try {            if (Object.class.equals(method.getDeclaringClass())) {                return method.invoke(this, args);            }            if (this.isDefaultMethod(method)) {                return this.invokeDefaultMethod(proxy, method, args);            }        } catch (Throwable var5) {            throw ExceptionUtil.unwrapThrowable(var5);        }        MapperMethod mapperMethod = this.cachedMapperMethod(method);        return mapperMethod.execute(this.sqlSession, args);}</code></pre><p>看看这部分的时序图</p><p><img src="/2019-06-23-Mybatis源码分析之工作流程/getMapper.jpg" alt=""></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;工作流程&quot;&gt;&lt;a href=&quot;#工作流程&quot; class=&quot;headerlink&quot; title=&quot;工作流程&quot;&gt;&lt;/a&gt;工作流程&lt;/h3&gt;&lt;h4 id=&quot;全局配置文件解析&quot;&gt;&lt;a href=&quot;#全局配置文件解析&quot; class=&quot;headerlink&quot; title=&quot;全
+      
+    
+    </summary>
+    
+    
+      <category term="mybatis" scheme="http://yoursite.com/tags/mybatis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql读书笔记之存储引擎</title>
+    <link href="http://yoursite.com/2019/05/30/Mysql%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/"/>
+    <id>http://yoursite.com/2019/05/30/Mysql读书笔记之存储引擎/</id>
+    <published>2019-05-30T13:43:36.000Z</published>
+    <updated>2019-06-01T05:02:32.371Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Mysql常用存储引擎"><a href="#Mysql常用存储引擎" class="headerlink" title="Mysql常用存储引擎"></a>Mysql常用存储引擎</h3><h4 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h4><p>​    InnoDB存储引擎是Mysql常用的存储引擎，从Mysql5.5.8版本开始成为Mysql默认的存储引擎。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;Mysql常用存储引擎&quot;&gt;&lt;a href=&quot;#Mysql常用存储引擎&quot; class=&quot;headerlink&quot; title=&quot;Mysql常用存储引擎&quot;&gt;&lt;/a&gt;Mysql常用存储引擎&lt;/h3&gt;&lt;h4 id=&quot;InnoDB&quot;&gt;&lt;a href=&quot;#InnoDB&quot; cla
+      
+    
+    </summary>
+    
+    
+      <category term="mysql" scheme="http://yoursite.com/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>分布式锁之zookeeper实现</title>
+    <link href="http://yoursite.com/2019/05/26/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%B9%8Bzookeeper%E5%AE%9E%E7%8E%B0/"/>
+    <id>http://yoursite.com/2019/05/26/分布式锁之zookeeper实现/</id>
+    <published>2019-05-26T08:40:29.000Z</published>
+    <updated>2019-05-26T08:40:29.930Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>zookeeper之工作原理</title>
@@ -396,57 +456,6 @@
     
     
       <category term="Netty" scheme="http://yoursite.com/tags/Netty/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Spring之@Autowired注解</title>
-    <link href="http://yoursite.com/2019/01/03/Spring%E4%B9%8B-Autowired%E6%B3%A8%E8%A7%A3/"/>
-    <id>http://yoursite.com/2019/01/03/Spring之-Autowired注解/</id>
-    <published>2019-01-03T11:54:36.000Z</published>
-    <updated>2019-01-03T12:10:17.721Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="Spring之-Autowired注解"><a href="#Spring之-Autowired注解" class="headerlink" title="Spring之@Autowired注解"></a>Spring之@Autowired注解</h3><p>@Autowired是我们开发中常用的注解，它能自动的将需要依赖的类注入进来</p><p>对象注入有两种方式：</p><ul><li>按照bean名称注入</li><li>按照type类型注入</li></ul><pre><code class="xml">  &lt;bean name=&#39;userInfo&#39; class=&#39;com.william.entity.UserInfo&#39;&gt;      &lt;property name=&#39;name&#39; value=&quot;william&quot;&gt;&lt;/property&gt;      &lt;property name=&#39;age&#39; value=&quot;18&quot;&gt;&lt;/property&gt;  &lt;/bean&gt;  &lt;bean name=&#39;userInfo&#39; class=&#39;com.william.usermanage.entity.UserInfo&#39;&gt;      &lt;property name=&#39;name&#39; value=&quot;william&quot;&gt;&lt;/property&gt;      &lt;property name=&#39;age&#39; value=&quot;18&quot;&gt;&lt;/property&gt;  &lt;/bean&gt;</code></pre><p>默认情况下使用类名首字母小写作为bean的id注入到Spring容器中，当有一个bean的类名相同，这时候需要配合</p><p><strong>@Qualifier</strong>注解来注入。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;Spring之-Autowired注解&quot;&gt;&lt;a href=&quot;#Spring之-Autowired注解&quot; class=&quot;headerlink&quot; title=&quot;Spring之@Autowired注解&quot;&gt;&lt;/a&gt;Spring之@Autowired注解&lt;/h3&gt;&lt;p&gt;@A
-      
-    
-    </summary>
-    
-    
-      <category term="Spring" scheme="http://yoursite.com/tags/Spring/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SpringCloud自学之路Ribbon负载均衡</title>
-    <link href="http://yoursite.com/2018/12/29/SpringCloud%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AFRibbon%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"/>
-    <id>http://yoursite.com/2018/12/29/SpringCloud学习之路Ribbon负载均衡/</id>
-    <published>2018-12-29T09:56:15.000Z</published>
-    <updated>2018-12-29T09:56:15.471Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>ES之快速索引原理</title>
-    <link href="http://yoursite.com/2018/12/29/ES%E4%B9%8B%E5%BF%AB%E9%80%9F%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86/"/>
-    <id>http://yoursite.com/2018/12/29/ES之快速索引原理/</id>
-    <published>2018-12-29T08:35:24.000Z</published>
-    <updated>2018-12-29T08:35:24.079Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
     
   </entry>
   

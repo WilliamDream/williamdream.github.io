@@ -259,6 +259,381 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/03/Spring之-Autowired注解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/03/Spring之-Autowired注解/" itemprop="url">Spring之@Autowired注解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-03T19:54:36+08:00">
+                2019-01-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Spring之-Autowired注解"><a href="#Spring之-Autowired注解" class="headerlink" title="Spring之@Autowired注解"></a>Spring之@Autowired注解</h3><p>@Autowired是我们开发中常用的注解，它能自动的将需要依赖的类注入进来</p>
+<p>对象注入有两种方式：</p>
+<ul>
+<li>按照bean名称注入</li>
+<li>按照type类型注入</li>
+</ul>
+<pre><code class="xml">  &lt;bean name=&#39;userInfo&#39; class=&#39;com.william.entity.UserInfo&#39;&gt;
+      &lt;property name=&#39;name&#39; value=&quot;william&quot;&gt;&lt;/property&gt;
+      &lt;property name=&#39;age&#39; value=&quot;18&quot;&gt;&lt;/property&gt;
+  &lt;/bean&gt;
+
+  &lt;bean name=&#39;userInfo&#39; class=&#39;com.william.usermanage.entity.UserInfo&#39;&gt;
+      &lt;property name=&#39;name&#39; value=&quot;william&quot;&gt;&lt;/property&gt;
+      &lt;property name=&#39;age&#39; value=&quot;18&quot;&gt;&lt;/property&gt;
+  &lt;/bean&gt;
+</code></pre>
+<p>默认情况下使用类名首字母小写作为bean的id注入到Spring容器中，当有一个bean的类名相同，这时候需要配合</p>
+<p><strong>@Qualifier</strong>注解来注入。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/SpringCloud学习之路Ribbon负载均衡/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/29/SpringCloud学习之路Ribbon负载均衡/" itemprop="url">SpringCloud自学之路Ribbon负载均衡</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-29T17:56:15+08:00">
+                2018-12-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/ES之快速索引原理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/29/ES之快速索引原理/" itemprop="url">ES之快速索引原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-29T16:35:24+08:00">
+                2018-12-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/ES之javaAPI使用01/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1079,460 +1454,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/27/SpringCloud学习之路01/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/27/SpringCloud学习之路01/" itemprop="url">SpringCloud学习之路01</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-27T10:35:24+08:00">
-                2018-10-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/28/Spring-Cloud之服务注册与发现/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/28/Spring-Cloud之服务注册与发现/" itemprop="url">Spring Cloud之服务注册与发现</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-28T19:31:06+08:00">
-                2018-09-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>##Spring Cloud之服务注册与发现</p>
-<h3 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h3>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/25/并发编程之重排序/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/25/并发编程之重排序/" itemprop="url">Untitled</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-25T00:00:00+08:00">
-                2018-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>title: 并发编程之重排序<br>date: 2018-09-22 18:46:35<br>tags: thread</p>
-<blockquote>
-<p>重排序是编译器和处理器优化程序性能的一种重要方式。</p>
-</blockquote>
-<p>从Java源代码到最终可执行指令序列会经历三种排序：</p>
-<ol>
-<li>编译器优化排序</li>
-<li>指令级并行重排序</li>
-<li>内存系统重排序</li>
-</ol>
-<p><img src="/2018-09-25-并发编程之重排序/byprocess.png" alt=""></p>
-<p>重排序分为两类：编译期重排序和运行期重排序。指令级并行重排序和内存系统重排序属于运行期重排序。</p>
-<p>编译器重排序：编译器在不改变单线程语义的前提下，可以重新安排语句的执行顺序。</p>
-<p>指令级并行的重排序：如果不存在数据依赖行，处理器可以改变对应的机器指令的执行顺序。</p>
-<h4 id="编译器重排序"><a href="#编译器重排序" class="headerlink" title="编译器重排序"></a>编译器重排序</h4><p>如果两个操作访问同一个变量，且这两个操作中有一个为写操作，此时这两个操作之间就存在数据依赖性。数据依赖分下列三种类型：</p>
-<table>
-<thead>
-<tr>
-<th>名称</th>
-<th>代码示例</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>先写后读</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>先写后写</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>先读后写</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>####处理器重排序</p>
-<p>下面是常见的处理器重排序类型列表：</p>
-<p><img src="/2018-09-25-并发编程之重排序/CPU.png" alt=""></p>
-<p>常见的处理器都不允许对存在数据依赖关系的操作进行重排序。</p>
-<p>####内存屏障</p>
-<h5 id="1-什么是内存屏障"><a href="#1-什么是内存屏障" class="headerlink" title="1. 什么是内存屏障"></a>1. 什么是内存屏障</h5><p>CPU的乱序执行，本质还是，由于在多CPU的机器上，每个CPU都存在cache，当一个特定数据第一次被特定一个<br>CPU获取时，由于在该CPU缓存中不存在，就会从内存中去获取，被加载到CPU高速缓存中后就能从缓存中快速访<br>问。当某个CPU进行写操作时，它必须确保其他的CPU已经将这个数据从他们的缓存中移除，这样才能让其他CPU<br>安全的修改数据。显然，存在多个cache时，我们必须通过一个cache一致性协议来避免数据不一致的问题，而这<br>个通讯的过程就可能导致乱序访问的问题，也就是运行时的内存乱序访问。<br>现在的CPU架构都提供了内存屏障功能，在x86的cpu中，实现了相应的内存屏障，他分为：<strong>写屏障</strong><code>store barrier</code>、<strong>读屏障</strong><code>load barrier</code>和<strong>全屏障</strong><code>Full Barrier</code>。主要作用是：<strong>防止指令前后的重排序， 保证数据的可见性</strong>。</p>
-<ul>
-<li><strong>store barrier</strong></li>
-</ul>
-<p><code>store barrier</code>称为写屏障，相当于<code>storestore barrie</code>r, 强制所有在<code>storestore</code>内存屏障之前的所有执行，都要在该<br>内存屏障之前执行，并发送缓存失效的信号。所有在<code>storestore barrier</code>指令之后的<code>store</code>指令，都必须在<br><code>storestore barrier</code>屏障之前的指令执行完后再被执行。也就是进制了写屏障前后的指令进行重排序，是的所有<br><code>store barrier</code>之前发生的内存更新都是可见的（这里的可见指的是修改值可见以及操作结果可见）</p>
-<ul>
-<li><strong>load barrier</strong></li>
-</ul>
-<p><code>load barrier</code>称为读屏障，相当于<code>loadload barrier</code>，强制所有在<code>load barrie</code>r读屏障之后的load指令，都在<code>load barrier</code>屏障之后执行。也就是禁止对<code>load barrier</code>读屏障前后的<code>load</code>指令进行重排序， 配合<code>store barrier</code>，使得所<br>有<code>store barrier</code>之前发生的内存更新，对<code>load barrier</code>之后的<code>load</code>操作是可见的。</p>
-<ul>
-<li><strong>full barrier</strong></li>
-</ul>
-<p><code>full barrier</code>成为全屏障，相当于<code>storeload</code>，是一个全能型的屏障，因为它同时具备前面两种屏障的效果。强制了所有在<code>storeload barrier</code>之前的<code>store/load</code>指令，都在该屏障之前被执行，所有在该屏障之后的的<code>store/load</code>指令，都在该屏障之后被执行。禁止对<code>storeload</code>屏障前后的指令进行重排序。</p>
-<p><strong>总结：内存屏障只是解决顺序一致性问题，不解决缓存一致性问题，缓存一致性是由cpu的缓存锁以及MESI协议来完成的。而缓存一致性协议只关心缓存一致性，不关心顺序一致性。所以这是两个问题。</strong></p>
-<p>为了保证内存的可见性，Java编译器在生成指令序列的适当位置会插入内存屏障指令来禁止特定类型的处理器重排序。JMM把内存屏障分为下列四类：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">屏障类型</th>
-<th style="text-align:center">指令示例</th>
-<th style="text-align:left">说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">LoadLoad Barriers</td>
-<td style="text-align:center">load1 ; LoadLoad; load2;</td>
-<td style="text-align:left">确保load1数据的装载优先于load2及所有后续装载指令的装载</td>
-</tr>
-<tr>
-<td style="text-align:center">StoreStore Barriers</td>
-<td style="text-align:center">store1; storestore;store2;</td>
-<td style="text-align:left">确保store1数据对其他处理器可见优先于store2及所有后续存储</td>
-</tr>
-<tr>
-<td style="text-align:center">LoadStore Barries</td>
-<td style="text-align:center">load1;loadstore;store2;</td>
-<td style="text-align:left">确保load1数据装载优先于store2以及后续的存储指令刷新到内存</td>
-</tr>
-<tr>
-<td style="text-align:center">StoreLoad Barries</td>
-<td style="text-align:center">store1; storeload;load2;</td>
-<td style="text-align:left">确保store1数据对其他处理器变得可见， 优先于load2及所有后续装载指令的装载；这条内存屏障指令是一个全能型的屏障，在前面讲cpu层面的内存屏障的时候有提到。它同时具有其他3条屏障的效果</td>
-</tr>
-</tbody>
-</table>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1580,7 +1506,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1602,7 +1528,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

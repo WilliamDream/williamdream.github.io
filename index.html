@@ -254,6 +254,584 @@
   
   
 
+  <article class="post post-type-mybatis" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/23/Mybatis源码分析之工作流程/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/23/Mybatis源码分析之工作流程/" itemprop="url">Mybatis源码分析之工作流程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-23T12:32:50+08:00">
+                2019-06-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h3><h4 id="全局配置文件解析"><a href="#全局配置文件解析" class="headerlink" title="全局配置文件解析"></a>全局配置文件解析</h4><p>首先会解析全局配置文件<code>mybatis-config.xml</code>，下面我们来看看源码。现有下面的调用方式进行查询：</p>
+<pre><code class="java">public void queryBlog() throws IOException {
+        String resource = &quot;mybatis-config.xml&quot;;
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+
+        SqlSession session = sqlSessionFactory.openSession();
+        try {
+            BlogMapper mapper = session.getMapper(BlogMapper.class);
+            BlogExample example = new BlogExample();
+            List&lt;Blog&gt; list = mapper.selectByExample(example);
+            System.out.println(list);
+        } finally {
+            session.close();
+        }
+}
+</code></pre>
+<p>我们跟进<code>SqlSessionFactoryBuilder</code>的<code>build()</code>方法：</p>
+<pre><code class="java">public SqlSessionFactory build(InputStream inputStream) {
+        //调用类中重载的build方面
+        return this.build((InputStream)inputStream, (String)null, (Properties)null);
+}
+</code></pre>
+<pre><code class="java">public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
+        SqlSessionFactory var5;
+        try {
+            //XMLConfigBuilder它时负责解析全局配置文件的类，跟进XMLConfigBuilder类中
+            XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
+            var5 = this.build(parser.parse());
+        } catch (Exception var14) {
+            throw ExceptionFactory.wrapException(&quot;Error building SqlSession.&quot;, var14);
+        } finally {
+            ErrorContext.instance().reset();
+
+            try {
+                inputStream.close();
+            } catch (IOException var13) {
+                ;
+            }
+
+        }
+
+        return var5;
+    }
+</code></pre>
+<pre><code class="java">public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
+        this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);
+}
+//发现会new Configuration()对象
+private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+    super(new Configuration());
+    this.localReflectorFactory = new DefaultReflectorFactory();
+    ErrorContext.instance().resource(&quot;SQL Mapper Configuration&quot;);
+    this.configuration.setVariables(props);
+    this.parsed = false;
+    this.environment = environment;
+    this.parser = parser;
+}
+</code></pre>
+<p>看到new Configuration()对象时，可以猜到这个就是全局配置文件映射类。</p>
+<p>我们回到<strong>SqlSessionFactoryBuilder</strong>的<strong>build()</strong>方法。</p>
+<pre><code class="java">var5 = this.build(parser.parse());
+</code></pre>
+<p>可以看到parse()就是具体的解析配置文件的方法，继续跟进进入<strong>XMLConfigBuilder</strong></p>
+<pre><code class="java">    public Configuration parse() {
+        //判断配置文件是否已经加载，只能加载一次
+        if (this.parsed) {
+            throw new BuilderException(&quot;Each XMLConfigBuilder can only be used once.&quot;);
+        } else {
+            this.parsed = true;
+            //注意参数是mybatis-config.xml的根节点configuration
+            this.parseConfiguration(this.parser.evalNode(&quot;/configuration&quot;));
+            return this.configuration;
+        }
+    }
+
+    //看到这里，就明白了这里。下面是依次解析根节点下的一级节点
+    private void parseConfiguration(XNode root) {
+        try {
+            this.propertiesElement(root.evalNode(&quot;properties&quot;));
+            Properties settings = this.settingsAsProperties(root.evalNode(&quot;settings&quot;));
+            this.loadCustomVfs(settings);
+            this.loadCustomLogImpl(settings);
+            this.typeAliasesElement(root.evalNode(&quot;typeAliases&quot;));
+            this.pluginElement(root.evalNode(&quot;plugins&quot;));
+            this.objectFactoryElement(root.evalNode(&quot;objectFactory&quot;));
+            this.objectWrapperFactoryElement(root.evalNode(&quot;objectWrapperFactory&quot;));
+            this.reflectorFactoryElement(root.evalNode(&quot;reflectorFactory&quot;));
+            this.settingsElement(settings);
+            this.environmentsElement(root.evalNode(&quot;environments&quot;));
+            this.databaseIdProviderElement(root.evalNode(&quot;databaseIdProvider&quot;));
+            this.typeHandlerElement(root.evalNode(&quot;typeHandlers&quot;));
+            this.mapperElement(root.evalNode(&quot;mappers&quot;));
+        } catch (Exception var3) {
+            throw new BuilderException(&quot;Error parsing SQL Mapper Configuration. Cause: &quot; + var3, var3);
+        }
+    }
+</code></pre>
+<p>解析这部分我们就不细看了，就以解析<code>mappers</code>为例：可以看到会将mapper对象放入Configuration的<code>mapperRegistry</code>属性中。</p>
+<pre><code class="java">Class&lt;?&gt; mapperInterface = Resources.classForName(mapperClass);
+this.configuration.addMapper(mapperInterface);
+//再跟进看看addMapper()方法。
+public &lt;T&gt; void addMapper(Class&lt;T&gt; type) {
+        if (type.isInterface()) {
+            if (this.hasMapper(type)) {
+                throw new BindingException(&quot;Type &quot; + type + &quot; is already known to the MapperRegistry.&quot;);
+            }
+
+            boolean loadCompleted = false;
+
+            try {
+                //knownMappers为HashMap，key为mapper接口类型，value为接口的工厂类。
+                this.knownMappers.put(type, new MapperProxyFactory(type));
+                MapperAnnotationBuilder parser = new MapperAnnotationBuilder(this.config, type);
+                parser.parse();
+                loadCompleted = true;
+            } finally {
+                if (!loadCompleted) {
+                    this.knownMappers.remove(type);
+                }
+
+            }
+        }
+
+    }
+</code></pre>
+<p>通过对节点的解析，然后将属性赋值给Configuration对象中的属性。解析完成后，调用build()方法。</p>
+<pre><code class="java">public SqlSessionFactory build(Configuration config) {
+        return new DefaultSqlSessionFactory(config);
+}
+</code></pre>
+<p>DefaultSqlSessionFactory是SqlSessionFactory接口的默认实现。下面通过时序图更直观的来看看：</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/SQLSessionFactory.jpg" alt=""></p>
+<h4 id="创建会话"><a href="#创建会话" class="headerlink" title="创建会话"></a>创建会话</h4><pre><code class="java">SqlSession session = sqlSessionFactory.openSession();
+</code></pre>
+<p>点进跟进查看openSession()的实现，可以在DefaultSqlSessionFactory类中看到如下方法：</p>
+<pre><code class="java">private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
+        Transaction tx = null;
+
+        DefaultSqlSession var8;
+        try {
+            Environment environment = this.configuration.getEnvironment();
+            TransactionFactory transactionFactory = this.getTransactionFactoryFromEnvironment(environment);
+            tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+            //执行器，Exector是直接操作数据库的接口类，
+            Executor executor = this.configuration.newExecutor(tx, execType);
+            //返回会话DefaultSqlSession
+            var8 = new DefaultSqlSession(this.configuration, executor, autoCommit);
+        } catch (Exception var12) {
+            this.closeTransaction(tx);
+            throw ExceptionFactory.wrapException(&quot;Error opening session.  Cause: &quot; + var12, var12);
+        } finally {
+            ErrorContext.instance().reset();
+        }
+
+        return var8;
+    }
+</code></pre>
+<pre><code class="java">public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
+        executorType = executorType == null ? this.defaultExecutorType : executorType;
+        executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
+        Object executor;
+        if (ExecutorType.BATCH == executorType) {
+            executor = new BatchExecutor(this, transaction);
+        } else if (ExecutorType.REUSE == executorType) {
+            executor = new ReuseExecutor(this, transaction);
+        } else {
+            executor = new SimpleExecutor(this, transaction);
+        }
+
+        if (this.cacheEnabled) {//是否启用二级缓存
+            executor = new CachingExecutor((Executor)executor);
+        }
+        //this.interceptorChain是插件拦截器链
+        Executor executor = (Executor)this.interceptorChain.pluginAll(executor);
+        return executor;
+    }
+</code></pre>
+<p>Executor类关系图如下：BaseExecutor为抽象类</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/Executor.png" alt=""></p>
+<p>创建会话时序图如下：</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/DefaultSqlSession.jpg" alt=""></p>
+<h4 id="获取代理对象"><a href="#获取代理对象" class="headerlink" title="获取代理对象"></a>获取代理对象</h4><p>会话创建完成后，接下来我们继续看看如何通过getMapper()获得mapper接口的。</p>
+<pre><code class="java">BlogMapper mapper = session.getMapper(BlogMapper.class);
+</code></pre>
+<p>点进跟进，在DefaultSqlSession类中。</p>
+<pre><code class="java">public &lt;T&gt; T getMapper(Class&lt;T&gt; type) {
+        return this.configuration.getMapper(type, this);
+}
+</code></pre>
+<p>然后从Configuration配置对象的<code>mapperRegistry</code>属性中取出，在前面第一步解析配置文件是，将mapper接口放入了HashMap中。</p>
+<pre><code class="java">public &lt;T&gt; T getMapper(Class&lt;T&gt; type, SqlSession sqlSession) {
+        return this.mapperRegistry.getMapper(type, sqlSession);
+}
+</code></pre>
+<p>继续跟进源码，在MapperProxyFactory类中发现了，看到如下代码，就豁然开朗了，这是JDK动态代理的实现啊，也就是最后返回了代理对象。</p>
+<pre><code class="java">protected T newInstance(MapperProxy&lt;T&gt; mapperProxy) {
+        return Proxy.newProxyInstance(this.mapperInterface.getClassLoader(), new Class[]{this.mapperInterface}, mapperProxy);
+}
+</code></pre>
+<p>接着我们看看<strong>MapperProxy</strong>类，最后会带哦用invoke()方法。</p>
+<pre><code class="java">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        try {
+            if (Object.class.equals(method.getDeclaringClass())) {
+                return method.invoke(this, args);
+            }
+
+            if (this.isDefaultMethod(method)) {
+                return this.invokeDefaultMethod(proxy, method, args);
+            }
+        } catch (Throwable var5) {
+            throw ExceptionUtil.unwrapThrowable(var5);
+        }
+
+        MapperMethod mapperMethod = this.cachedMapperMethod(method);
+        return mapperMethod.execute(this.sqlSession, args);
+}
+</code></pre>
+<p>看看这部分的时序图</p>
+<p><img src="/2019-06-23-Mybatis源码分析之工作流程/getMapper.jpg" alt=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/30/Mysql读书笔记之存储引擎/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/30/Mysql读书笔记之存储引擎/" itemprop="url">Mysql读书笔记之存储引擎</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-30T21:43:36+08:00">
+                2019-05-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Mysql常用存储引擎"><a href="#Mysql常用存储引擎" class="headerlink" title="Mysql常用存储引擎"></a>Mysql常用存储引擎</h3><h4 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h4><p>​    InnoDB存储引擎是Mysql常用的存储引擎，从Mysql5.5.8版本开始成为Mysql默认的存储引擎。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/26/分布式锁之zookeeper实现/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/26/分布式锁之zookeeper实现/" itemprop="url">分布式锁之zookeeper实现</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-26T16:40:29+08:00">
+                2019-05-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
   <article class="post post-type-zookeeper" itemscope="" itemtype="http://schema.org/Article">
   
   
@@ -1533,625 +2111,11 @@ private final boolean compareAndSetHead(Node update) {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/28/Elasticsearch聚合查询之一简单聚合/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/28/Elasticsearch聚合查询之一简单聚合/" itemprop="url">Elasticsearch聚合查询之一简单聚合</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-28T14:24:20+08:00">
-                2019-02-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/elasticsearch/" itemprop="url" rel="index">
-                    <span itemprop="name">elasticsearch</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Elasticsearch聚合查询之一简单聚合"><a href="#Elasticsearch聚合查询之一简单聚合" class="headerlink" title="Elasticsearch聚合查询之一简单聚合"></a>Elasticsearch聚合查询之一简单聚合</h3><h4 id="1-聚合查询分类"><a href="#1-聚合查询分类" class="headerlink" title="1. 聚合查询分类"></a>1. 聚合查询分类</h4><ul>
-<li>简单聚合</li>
-<li>复杂聚合</li>
-<li>过滤聚合</li>
-<li>多桶排序</li>
-<li>近似聚合</li>
-</ul>
-<h4 id="2-简单聚合"><a href="#2-简单聚合" class="headerlink" title="2. 简单聚合"></a>2. 简单聚合</h4><h5 id="2-1-统计平均值"><a href="#2-1-统计平均值" class="headerlink" title="2.1 统计平均值"></a>2.1 统计平均值</h5><pre><code class="json"># 统计所有书籍的平均价格
-GET /library/books/_search
-{
-    &quot;size&quot;:0,
-    &quot;aggregations&quot;:{
-        &quot;avg_price&quot;:{
-            &quot;avg&quot;:{
-                &quot;field&quot;:&quot;price&quot;
-            }
-        }
-    }
-}
-
-# 根据书籍不同类别分组统计每个版本的平均价格
-# select type,avg(pirce) from books group by type
-GET /library/books/_search
-{
-    &quot;size&quot;:0,
-    &quot;aggs&quot;:{
-        &quot;genders&quot;:{
-            &quot;terms&quot;:{
-                &quot;field&quot;:&quot;type&quot;
-            },
-            &quot;aggs&quot;:{
-                &quot;avg_price&quot;:{
-                    &quot;avg&quot;:{
-                        &quot;field&quot;:&quot;pirce&quot;
-                    }
-                }
-            }
-        }
-    }
-}
-</code></pre>
-<h5 id="2-2-统计最大值与最小值"><a href="#2-2-统计最大值与最小值" class="headerlink" title="2.2 统计最大值与最小值"></a>2.2 统计最大值与最小值</h5><pre><code class="json">
-GET /library/books/_search
-{
-  &quot;size&quot;:0,
-    &quot;aggregations&quot;:{
-        &quot;min_price&quot;:{
-            &quot;min&quot;:{
-                &quot;field&quot;:&quot;price&quot;
-            }
-        },
-        &quot;max_price&quot;:{
-            &quot;max&quot;:{
-                &quot;field&quot;:&quot;price&quot;
-            }
-        }
-    }
-}
-</code></pre>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/25/Java基础之HashMap原理分析/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/25/Java基础之HashMap原理分析/" itemprop="url">Java基础之HashMap原理分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-25T12:55:02+08:00">
-                2019-02-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>###1. HashMap实现</p>
-<p>HashMap是大家平时开发中最常用的容器之一，相信大家已经很熟悉了。下面聊聊HashMap的实现，大牛请跳过。</p>
-<p>####1.1 数据结构</p>
-<p><code>HashMap</code>是由数组+链表以及红黑树组成，我们常把数组中的每一个节点称为一个<strong>桶</strong>。当向桶中添加一个键值对时，首先计算键值对中key的hash值，以此确定插入数组中的位置，但是可能存在同一hash值的元素已经被放在数组同一位置了，这种现象称为<strong>碰撞</strong>，这时按照尾插法(jdk1.7及以前为头插法)的方式添加key-value到同一hash值的元素的后面，链表就这样形成了。当链表长度超过8(TREEIFY_THRESHOLD)时，链表就转换为红黑树。</p>
-<p>###2. HashMap源码分析</p>
-<p>####2.1 静态变量定义</p>
-<pre><code class="java">    /**
-     * 默认初始化容量，值为16，必须是2的n次幂，继续往下看看为什么是2的n次幂吧。
-     */
-    static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4; // aka 16
-
-    /**
-     * 最大容量, 容量不能超出这个值。
-     */
-    static final int MAXIMUM_CAPACITY = 1 &lt;&lt; 30;
-
-    /**
-     * 默认的加载因子。
-     */
-    static final float DEFAULT_LOAD_FACTOR = 0.75f;
-
-    /**
-     * 将链表转化为红黑树的阈值。
-     * 当添加一个元素被添加到有至少TREEIFY_THRESHOLD个节点的桶中，
-     * 桶中链表将被转化为树形结构。
-     */
-    static final int TREEIFY_THRESHOLD = 8;
-
-    /**
-     *  恢复成链式结构的桶大小阈值。
-     * 当桶中元素不大于UNTREEIFY_THRESHOLD时，将由红黑树转化为链表结构，
-     */
-    static final int UNTREEIFY_THRESHOLD = 6;
-
-    /**
-     * 桶可能被转化为树形结构的最小容量。当哈希表的大小超过这个阈值，才会把链式结构转化成树型结构，否则         * 仅采取扩容来尝试减少冲突。
-      * 应该至少4*TREEIFY_THRESHOLD来避免扩容和树形结构化之间的冲突。
-     */
-    static final int MIN_TREEIFY_CAPACITY = 64;
-
-</code></pre>
-<p>####2.2 put关键方法</p>
-<pre><code class="java">
-public V put(K key, V value) {
-    return putVal(hash(key), key, value, false, true);
-}
-
-/**
- * 获取hash值
- */
-static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);
-}
-
-</code></pre>
-<p><strong>说明：</strong>从源码中可以看出，<code>put()</code>方法主要分为以下两步</p>
-<ul>
-<li><code>hash()</code>方法计算出hash值；</li>
-<li><code>putVal()</code>方法设置值实现功能。</li>
-</ul>
-<p>#####2.2.1 hash方法</p>
-<ul>
-<li><code>key.hashCode()</code>:第一步获取到hash值；</li>
-<li>key的<code>hashCode</code>向右移16位，然后高16位与低16位进行异或运算；</li>
-</ul>
-<p><strong>注意:</strong>这里为什么key的<code>hashCode</code>要向右移16位然后进行异或运算?</p>
-<p>先看看要落入的节点位置是如何确定的</p>
-<pre><code class="java">if ((p = tab[i = (n - 1) &amp; hash]) == null)
-            tab[i] = newNode(hash, key, value, null);
-</code></pre>
-<p>其中<code>i=(n-1)&amp;hash</code>就可以确定元素要落入的桶位置。即哈希值和数组容量值-1进行与运算。初始n为16。我们当然期望元素落入桶的位置尽可能均衡。n-1=15，二进制表示<code>01111</code>，它直接与<code>key.hashCode()</code>相与，实际上低四位就决定元素落入桶的 位置，为了让高位也参与进来，所以把高16位向右移16位，然后与低16位做异或运算。这样尽可能让元素的落点均衡。这也是为什么要求Hashmap容量必须是2的n次幂。</p>
-<h5 id="2-2-2putVal方法"><a href="#2-2-2putVal方法" class="headerlink" title="2.2.2putVal方法"></a>2.2.2putVal方法</h5><pre><code class="java">    /**
-     * Implements Map.put and related methods
-     *
-     * @param hash hash for key
-     * @param key the key
-     * @param value the value to put
-     * @param onlyIfAbsent if true, don&#39;t change existing value
-     * @param evict if false, the table is in creation mode.
-     * @return previous value, or null if none
-     */
-    final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
-        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;
-         //如果哈希表为空，调用resize()创建一个哈希表
-        if ((tab = table) == null || (n = tab.length) == 0)
-            n = (tab = resize()).length;
-        //如果指定参数hash在表中没有对应的桶，即为没有碰撞
-        if ((p = tab[i = (n - 1) &amp; hash]) == null)
-            //直接将元素插入map中
-            tab[i] = newNode(hash, key, value, null);
-        else {    
-            //发生碰撞时，分为三种情况：1.第一个节点就匹配到
-            Node&lt;K,V&gt; e; K k;
-             //如果碰撞了，且桶中的第一个节点就匹配到了
-            if (p.hash == hash &amp;&amp;
-                ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))
-                e = p;
-            else if (p instanceof TreeNode) // 如果是红黑树形结构
-                e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
-            else {  //如果是链表结构
-                for (int binCount = 0; ; ++binCount) {
-                    if ((e = p.next) == null) {    // 如果是链表结尾，插入到尾部
-                        p.next = newNode(hash, key, value, null);
-                        //如果链表长度达到阈值TREEIFY_THRESHOLD，则把链表变为红黑树
-                        if (binCount &gt;= TREEIFY_THRESHOLD - 1)
-                            treeifyBin(tab, hash);
-                        break;
-                    }
-                    // 如果key的hash和key都相等，说明找到了已存在的key,则直接跳出循环。
-                    if (e.hash == hash &amp;&amp;
-                        ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
-                        break;
-                    // 用于遍历链表，与循环条件e = p.next；相呼应
-                    p = e;
-                }
-            }
-            //
-            if (e != null) { // existing mapping for key
-                V oldValue = e.value;
-                if (!onlyIfAbsent || oldValue == null)
-                    e.value = value;
-                afterNodeAccess(e);
-                return oldValue;
-            }
-        }
-        ++modCount;
-        if (++size &gt; threshold)
-            resize();
-        afterNodeInsertion(evict);
-        return null;
-    }
-</code></pre>
-<p>putVal方法处理逻辑如下：</p>
-<ul>
-<li><p>判断哈希表是否为空，为空就调用resize创建一个；</p>
-</li>
-<li><p>根据tab[i = (n - 1) &amp; hash]找到对应桶的位置；</p>
-</li>
-<li><p>如果没有发生碰撞就直接插入，如果发生碰撞了，就遍历桶找到Key的映射</p>
-<ul>
-<li>如果桶的第一个节点就找到了，就将第一个节点记录到临时对象中；</li>
-<li>如果第一个节点没有匹配到，且为红黑树结构，则调用红黑树对应的方法插入键值对；</li>
-<li>如果是链表结构，则遍历链表，找key的映射。如果没找到，就将键值对插入链表尾部，如果链表长度达到阈值就转换为红黑树；如果找到了，就将节点记录到临时对象中，退出循环。</li>
-</ul>
-</li>
-<li><p>如果找到了key的映射节点，说明已经存在。记录节点的vlaue，如果参数onlyIfAbsent为false，或者oldValue为null，替换value，否则不替换。返回记录下节点的value。</p>
-</li>
-<li><p>如果没有找到Key的映射节点，说明已经插入，size加1，并判断是否达到扩容值。</p>
-<p>​</p>
-<p>​</p>
-</li>
-</ul>
-<h5 id="2-2-3-treeifyBin方法"><a href="#2-2-3-treeifyBin方法" class="headerlink" title="2.2.3 treeifyBin方法"></a>2.2.3 treeifyBin方法</h5><p>当链表长度大于阈值8时会将链表转换为红黑树结构。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/22/并发编程之重排序/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/22/并发编程之重排序/" itemprop="url">并发编程之重排序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-22T18:03:09+08:00">
-                2019-02-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2199,7 +2163,7 @@ static final int hash(Object key) {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2221,7 +2185,7 @@ static final int hash(Object key) {
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

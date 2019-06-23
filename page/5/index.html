@@ -259,6 +259,428 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/31/Elasticsearch之查询原理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/31/Elasticsearch之查询原理/" itemprop="url">Elasticsearch之查询原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-31T13:42:23+08:00">
+                2018-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index">
+                    <span itemprop="name">elasticsearch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="Elasticsearch之查询原理"><a href="#Elasticsearch之查询原理" class="headerlink" title="Elasticsearch之查询原理"></a>Elasticsearch之查询原理</h3><h4 id="1-创建文档"><a href="#1-创建文档" class="headerlink" title="1.创建文档"></a>1.创建文档</h4><p>#####1.1分片规则算法</p>
+<p>​    当我们对ES进行新增数据操作时，ES怎么知道将数据存储在哪个分片下并复制到那个副本分片下。或者当我们检索数据时，ES怎么知道去哪个分片下查找数据。这些都不是随机的，根据分片规则来完成的，ES通过如下公式来计算文档对应的分片：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/31/Elasticsearch之查询原理/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/28/Elasticsearch之基本查询语句/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/28/Elasticsearch之基本查询语句/" itemprop="url">Elasticsearch之基本查询语句</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-28T20:41:46+08:00">
+                2018-08-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index">
+                    <span itemprop="name">elasticsearch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="Elasticsearch基本语法"><a href="#Elasticsearch基本语法" class="headerlink" title="Elasticsearch基本语法"></a>Elasticsearch基本语法</h3><h4 id="1-增删改查语法"><a href="#1-增删改查语法" class="headerlink" title="1.增删改查语法"></a>1.增删改查语法</h4><ul>
+<li>创建索引</li>
+</ul>
+<pre><code class="json">PUT william
+{
+  &quot;settings&quot;: {
+    &quot;number_of_shards&quot;: 3,        
+    &quot;number_of_replicas&quot;: 1
+  } 
+}
+</code></pre>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/28/Elasticsearch之基本查询语句/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/25/Java设计模式之委派模式/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/25/Java设计模式之委派模式/" itemprop="url">Java设计模式之委派模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-25T21:14:23+08:00">
+                2018-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/23/Java设计模式之代理模式/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1198,141 +1620,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-thread" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/06/多线程之Synchronized实现原理/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/06/多线程之Synchronized实现原理/" itemprop="url">并发编程之初识</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-06T15:21:36+08:00">
-                2018-08-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Synchronized实现原理"><a href="#Synchronized实现原理" class="headerlink" title="Synchronized实现原理"></a>Synchronized实现原理</h3><h4 id="1-认识Synchronized关键字"><a href="#1-认识Synchronized关键字" class="headerlink" title="1.认识Synchronized关键字"></a>1.认识Synchronized关键字</h4><p>​    编写多线程代码是通常程序员不管懂不懂synchronized实现都会使用，原因就是当我们操作临界区资源时，就需要同步机制，synchronized可以实现线程同步，解决原子性、有序性和可见性问题。今天我们就来刨根问底来搞清楚synchronized实现原理。</p>
-<h5 id="1-1-三种使用"><a href="#1-1-三种使用" class="headerlink" title="1.1 三种使用"></a>1.1 三种使用</h5><p>（1）修饰实例方法，作用于当前实例加锁，进入同步代码前要获得当前实例的锁</p>
-<p>（2）修饰静态方法，作用于当前类对象加锁，进入同步代码前要获得当前类对象的锁</p>
-<p>（3）修饰代码块，指定加锁对象，对给定对象加锁，进入同步代码库前要获得给定对象的锁。 这种方式把需要同步的范围变小，即只把需要共享数据的代码锁起来，故而效果更好。</p>
-<h5 id="1-2-synchronized字节码指令"><a href="#1-2-synchronized字节码指令" class="headerlink" title="1.2 synchronized字节码指令"></a>1.2 synchronized字节码指令</h5><p>通过javap -v 来查看对应代码的字节码指令，</p>
-<h4 id="2-对象监视器Monitor"><a href="#2-对象监视器Monitor" class="headerlink" title="2.对象监视器Monitor"></a>2.对象监视器Monitor</h4><p>#####2.1 monitorenter与monitorexit</p>
-<p>​    对于同步块的实现使用了<code>monitorenter</code>和<code>monitorexit</code>指令，他们隐式的执行了<code>Lock</code>和<code>UnLock</code>操作，用于提供原子性保证。 <code>monitorenter</code>指令插入到同步代码块开始的位置、<code>monitorexit</code>指令插入到同步代码块结束位置，jvm需要保证每 个<code>monitorenter</code>都有一个<code>monitorexit</code>对应。 这两个指令，本质上都是对一个对象的监视器(monitor)进行获取，这个过程是排他的，也就是说同一时刻只能有 一个线程获取到由synchronized所保护对象的监视器线程执行到<code>monitorenter</code>指令时，会尝试获取对象所对应的<code>monitor</code>所有权，也就是尝试获取对象的锁；而执行<code>monitorexit</code>，就是释放<code>monitor</code>的所有权 。</p>
-<h5 id="2-2-ACC-SYNCHRONIZED"><a href="#2-2-ACC-SYNCHRONIZED" class="headerlink" title="2.2 ACC_SYNCHRONIZED"></a>2.2 ACC_SYNCHRONIZED</h5><p>​    对于同步方法使用<code>ACC_SYNCHRONIZED</code>标记符来实现同步。方法级的同步是隐式的。同步方法的常量池中会有一个<code>ACC_SYNCHRONIZED</code>标志。当某个线程要访问某个方法的时候，会检查是否有<code>ACC_SYNCHRONIZED</code>，如果有设置，则需要先获得监视器锁，然后开始执行方法，方法执行之后再释放监视器锁。这时如果其他线程来请求执行方法，会因为无法获得监视器锁而被阻断住。值得注意的是，如果在方法执行过程中，发生了异常，并且方法内部并没有处理该异常，那么在异常被抛到方法外面之前监视器锁会被自动释放。</p>
-<h5 id="2-3-什么对象可以成为锁"><a href="#2-3-什么对象可以成为锁" class="headerlink" title="2.3 什么对象可以成为锁"></a>2.3 什么对象可以成为锁</h5><p>万物皆对象，对象都有锁。</p>
-<p>对象头</p>
-<h4 id="3-synchronized锁的原理"><a href="#3-synchronized锁的原理" class="headerlink" title="3 synchronized锁的原理"></a>3 synchronized锁的原理</h4><p>偏向锁&gt;轻量级锁&gt;重量级锁</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1380,7 +1672,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-count">51</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1402,7 +1694,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
