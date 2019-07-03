@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-06-23T08:03:52.026Z</updated>
+  <updated>2019-07-03T15:04:48.146Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Dubbo源码分析之SPI扩展机制</title>
+    <link href="http://yoursite.com/2019/06/29/Dubbo%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E4%B9%8BSPI%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6/"/>
+    <id>http://yoursite.com/2019/06/29/Dubbo源码分析之SPI扩展机制/</id>
+    <published>2019-06-29T04:55:02.000Z</published>
+    <updated>2019-07-03T15:04:48.146Z</updated>
+    
+    <content type="html"><![CDATA[<p>####Java SPI扩展机制</p><h5 id="SPI是什么？"><a href="#SPI是什么？" class="headerlink" title="SPI是什么？"></a>SPI是什么？</h5><p>​    <strong>SPI</strong>是<code>service provider interface</code>，是JDK内置的一种服务提供发现机制。它是针对厂商或插件来进行服务扩展发现的，像JDBC、日志框架等都有用的。简单来说，它是一种动态替换发现的机制。举个简单的例子，如果我们定义了一个规范，需要第三方厂商去实现，那么对于我们应用方来说，只需要集成对应厂商的插件，既可以完成对应规范的实现机制。 形成一种插拔式的扩展手段。</p><h5 id="jdk-SPI规范"><a href="#jdk-SPI规范" class="headerlink" title="jdk SPI规范"></a>jdk SPI规范</h5><p>实现SPI需要遵守SPI本身的规范：</p><ul><li>服务的提供者需要在classpath下创建一个目录，该目录命名必须是：META-INF/services</li><li>在该目录下创建一个properties文件，该文件需要满足以下几个条件：<ul><li>文件名必须是扩展的接口的全路径名称</li><li>文件内部描述的是该扩展接口的所有实现类</li><li>a) 文件的编码格式是UTF-8</li></ul></li><li>通过java.util.ServiceLoader的加载机制来发现</li></ul><p>SPI应用有很多，比如常用的common-logging 日志门面接口，还有java.sql.Driver驱动类，需要第三方厂商去实现接口。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;####Java SPI扩展机制&lt;/p&gt;
+&lt;h5 id=&quot;SPI是什么？&quot;&gt;&lt;a href=&quot;#SPI是什么？&quot; class=&quot;headerlink&quot; title=&quot;SPI是什么？&quot;&gt;&lt;/a&gt;SPI是什么？&lt;/h5&gt;&lt;p&gt;​    &lt;strong&gt;SPI&lt;/strong&gt;是
+      
+    
+    </summary>
+    
+      <category term="dubbo" scheme="http://yoursite.com/categories/dubbo/"/>
+    
+    
+      <category term="dubbo" scheme="http://yoursite.com/tags/dubbo/"/>
+    
+  </entry>
   
   <entry>
     <title>Mybatis源码分析之工作流程</title>
@@ -448,29 +474,6 @@
       
       
         &lt;h3 id=&quot;Netty笔记整理之Buffer&quot;&gt;&lt;a href=&quot;#Netty笔记整理之Buffer&quot; class=&quot;headerlink&quot; title=&quot;Netty笔记整理之Buffer&quot;&gt;&lt;/a&gt;Netty笔记整理之Buffer&lt;/h3&gt;&lt;h4 id=&quot;1-Buffer概
-      
-    
-    </summary>
-    
-    
-      <category term="Netty" scheme="http://yoursite.com/tags/Netty/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Netty框架整理之JAVA I/O模型</title>
-    <link href="http://yoursite.com/2019/01/07/Netty%E6%A1%86%E6%9E%B6%E6%95%B4%E7%90%86%E4%B9%8BJAVA%20IO%E6%A8%A1%E5%9E%8B/"/>
-    <id>http://yoursite.com/2019/01/07/Netty框架整理之JAVA IO模型/</id>
-    <published>2019-01-07T11:52:17.000Z</published>
-    <updated>2019-04-26T15:39:49.034Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="Java-I-O模型"><a href="#Java-I-O模型" class="headerlink" title="Java I/O模型"></a>Java I/O模型</h3><h4 id="1-阻塞与非阻塞"><a href="#1-阻塞与非阻塞" class="headerlink" title="1. 阻塞与非阻塞"></a>1. 阻塞与非阻塞</h4><p>在前面介绍了同步和异步的区别，这一节来看一下阻塞和非阻塞的区别。</p><p>　　阻塞就是：当某个事件或者任务在执行过程中，它发出一个请求操作，但是由于该请求操作需要的条件不满足，那么就会一直在那等待，直至条件满足；</p><p>　　非阻塞就是：当某个事件或者任务在执行过程中，它发出一个请求操作，如果该请求操作需要的条件不满足，会立即返回一个标志信息告知条件不满足，不会一直在那等待。</p><p>　　这就是阻塞和非阻塞的区别。也就是说阻塞和非阻塞的区别关键在于当发出请求一个操作时，如果条件不满足，是会一直等待还是返回一个标志信息。</p><p>　　举个简单的例子：</p><p>　　假如我要读取一个文件中的内容，如果此时文件中没有内容可读，对于同步来说就是会一直在那等待，直至文件中有内容可读；而对于非阻塞来说，就会直接返回一个标志信息告知文件中暂时无内容可读。</p><p>　　在网上有一些朋友将同步和异步分别与阻塞和非阻塞画上等号，事实上，它们是两组完全不同的概念。注意，理解这两组概念的区别对于后面IO模型的理解非常重要。</p><p>　　同步和异步着重点在于多个任务的执行过程中，一个任务的执行是否会导致整个流程的暂时等待；</p><p>　　而阻塞和非阻塞着重点在于发出一个请求操作时，如果进行操作的条件不满足是否会返会一个标志信息告知条件不满足。</p><p>　　理解阻塞和非阻塞可以同线程阻塞类比地理解，当一个线程进行一个请求操作时，如果条件不满足，则会被阻塞，即在那等待条件满足。</p><p>　在了解阻塞IO和非阻塞IO之前，先看下一个具体的IO操作过程是怎么进行的。</p><p>　　通常来说，IO操作包括：对硬盘的读写、对socket的读写以及外设的读写。</p><p>　　当用户线程发起一个IO请求操作（本文以读请求操作为例），内核会去查看要读取的数据是否就绪，对于阻塞IO来说，如果数据没有就绪，则会一直在那等待，直到数据就绪；对于非阻塞IO来说，如果数据没有就绪，则会返回一个标志信息告知用户线程当前要读的数据没有就绪。当数据就绪之后，便将数据拷贝到用户线程，这样才完成了一个完整的IO读请求操作，也就是说一个完整的IO读请求操作包括两个阶段：</p><p>　　1）查看数据是否就绪；</p><p>　　2）进行数据拷贝（内核将数据拷贝到用户线程）。</p><p>　　那么阻塞（blocking IO）和非阻塞（non-blocking IO）的区别就在于第一个阶段，如果数据没有就绪，在查看数据是否就绪的过程中是一直等待，还是直接返回一个标志信息。</p><p>　　Java中传统的IO都是阻塞IO，比如通过socket来读数据，调用read()方法之后，如果数据没有就绪，当前线程就会一直阻塞在read方法调用那里，直到有数据才返回；而如果是非阻塞IO的话，当数据没有就绪，read()方法应该返回一个标志信息，告知当前线程数据没有就绪，而不是一直在那里等待。</p><h4 id="2-同步与非同步"><a href="#2-同步与非同步" class="headerlink" title="2. 同步与非同步"></a>2. 同步与非同步</h4><p>同步和异步的概念出来已经很久了，网上有关同步和异步的说法也有很多。以下是我个人的理解：</p><p>　　同步就是：如果有多个任务或者事件要发生，这些任务或者事件必须逐个地进行，一个事件或者任务的执行会导致整个流程的暂时等待，这些事件没有办法并发地执行；</p><p>　　异步就是：如果有多个任务或者事件发生，这些事件可以并发地执行，一个事件或者任务的执行不会导致整个流程的暂时等待。</p><p>　　这就是同步和异步。举个简单的例子，假如有一个任务包括两个子任务A和B，对于同步来说，当A在执行的过程中，B只有等待，直至A执行完毕，B才能执行；而对于异步就是A和B可以并发地执行，B不必等待A执行完毕之后再执行，这样就不会由于A的执行导致整个任务的暂时等待。</p><p>　我们先来看一下同步IO和异步IO的定义，在《Unix网络编程》一书中对同步IO和异步IO的定义是这样的：</p><p>　　<strong>A synchronous I/O operation causes the requesting process to be blocked until that I/O operation completes.</strong><br>　　<strong>An asynchronous I/O operation does not cause the requesting process to be blocked.</strong></p><p>　　从字面的意思可以看出：同步IO即 如果一个线程请求进行IO操作，在IO操作完成之前，该线程会被阻塞；</p><p>　　而异步IO为 如果一个线程请求进行IO操作，IO操作不会导致请求线程被阻塞。</p><p>　　事实上，同步IO和异步IO模型是针对用户线程和内核的交互来说的：</p><p>　　对于同步IO：当用户发出IO请求操作之后，如果数据没有就绪，需要通过用户线程或者内核不断地去轮询数据是否就绪，当数据就绪时，再将数据从内核拷贝到用户线程；</p><p>　　而异步IO：只有IO请求操作的发出是由用户线程来进行的，IO操作的两个阶段都是由内核自动完成，然后发送通知告知用户线程IO操作已经完成。也就是说在异步IO中，不会对用户线程产生任何阻塞。</p><p>　　这是同步IO和异步IO关键区别所在，同步IO和异步IO的关键区别反映在数据拷贝阶段是由用户线程完成还是内核完成。所以说异步IO必须要有操作系统的底层支持。</p><p>　　注意同步IO和异步IO与阻塞IO和非阻塞IO是不同的两组概念。</p><p>　　阻塞IO和非阻塞IO是反映在当用户请求IO操作时，如果数据没有就绪，是用户线程一直等待数据就绪，还是会收到一个标志信息这一点上面的。也就是说，阻塞IO和非阻塞IO是反映在IO操作的第一个阶段，在查看数据是否就绪时是如何处理的。</p><h4 id="3-五种IO模型"><a href="#3-五种IO模型" class="headerlink" title="3. 五种IO模型"></a>3. 五种IO模型</h4>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;Java-I-O模型&quot;&gt;&lt;a href=&quot;#Java-I-O模型&quot; class=&quot;headerlink&quot; title=&quot;Java I/O模型&quot;&gt;&lt;/a&gt;Java I/O模型&lt;/h3&gt;&lt;h4 id=&quot;1-阻塞与非阻塞&quot;&gt;&lt;a href=&quot;#1-阻塞与非阻塞&quot; cla
       
     
     </summary>
