@@ -259,6 +259,297 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/16/Netty笔记整理之Selector/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/16/Netty笔记整理之Selector/" itemprop="url">Netty笔记整理之Selector</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-16T11:49:50+08:00">
+                2019-01-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Netty笔记整理之Selector"><a href="#Netty笔记整理之Selector" class="headerlink" title="Netty笔记整理之Selector"></a>Netty笔记整理之Selector</h3><h4 id="1-Selector概述"><a href="#1-Selector概述" class="headerlink" title="1. Selector概述"></a>1. Selector概述</h4><p><strong>Selector</strong> 是实现<strong>多路复用器</strong>的关键类 。它是Java NIO核心组件中的一个，Channel代表这一个网络连接通道，可以将Channel注册到Selector中以实现Selector对其的管理。</p>
+<h5 id="1-1-Selector的创建"><a href="#1-1-Selector的创建" class="headerlink" title="1.1 Selector的创建"></a>1.1 Selector的创建</h5><p>通过open()来创建Selector.</p>
+<pre><code class="java">Selector selector = Selector.open()
+</code></pre>
+<h5 id="1-2-将Channel注册到Selector中"><a href="#1-2-将Channel注册到Selector中" class="headerlink" title="1.2 将Channel注册到Selector中"></a>1.2 将Channel注册到Selector中</h5><pre><code class="java">channel.configureBlocking(false);
+SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
+</code></pre>
+<ul>
+<li><p>如果一个 Channel 要注册到 Selector 中，那么该 Channel 必须是<strong>非阻塞</strong>，<code>SelectableChannel</code>抽象类有一个 <strong>configureBlocking()</strong> 方法用于使通道处于阻塞模式或非阻塞模式。所以有<code>channel.configureBlocking(false);</code> 代码块。FileChannel不适用于Selector，FileChannel不能切换为非阻塞模式，更准确的来说是因为FileChannel没有继承SelectableChannel。因此，FileChannel 是不能够注册到 Channel 中的，因为它是<strong>阻塞</strong>的。</p>
+</li>
+<li><p>在 <code>register(Selector selector, int interestSet)</code> 方法的第二个参数，表示一个“interest 集合”，意思是通过 Selector 监听 Channel 时，对哪些事件感兴趣。可以监听四种不同类型的事件：</p>
+<p>Connect：连接完成事件( TCP 连接 )，仅适用于客户端，对应 <code>SelectionKey.OP_CONNECT</code> ；</p>
+<p>Accept：接受新连接事件，仅适用于服务端，对应 <code>SelectionKey.OP_ACCEPT</code> ；</p>
+<p>Read：读事件，适用于两端，对应 <code>SelectionKey.OP_READ</code> ，表示 Buffer 可读；</p>
+<p>Write：写时间，适用于两端，对应 <code>SelectionKey.OP_WRITE</code> ，表示 Buffer 可写。</p>
+</li>
+</ul>
+<p>  因为Selector可以对Channel的多个事件感兴趣，我们可以使用<strong>或运算</strong> <code>|</code> 来关注多个事件。</p>
+<pre><code class="java">  channel.register(selector, SelectionKey.OP_ACCEPT|SelectionKey.OP_READ|SelectionKey.OP_WRITE);
+</code></pre>
+<h4 id="2-SelectorKey"><a href="#2-SelectorKey" class="headerlink" title="2. SelectorKey"></a>2. SelectorKey</h4><h5 id="2-1-SelectorKey"><a href="#2-1-SelectorKey" class="headerlink" title="2.1 SelectorKey"></a>2.1 SelectorKey</h5><p>当Channel注册到Selector后会返回一个<strong>SelectionKey</strong>对象，该SelectionKey对象则代表这这个Channel和它注册的Selector间的关系。</p>
+<pre><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
+</code></pre><p><code>SelectionKey</code>是个抽象类，其中有四个重要属性：</p>
+<pre><code class="java">package java.nio.channels;
+public abstract class SelectionKey {
+    //感兴趣的事件集
+    public abstract int interestOps();
+    //准备就绪的事件集合
+    public abstract int readyOps();
+    //
+    public abstract SelectableChannel channel();
+    //
+    public abstract Selector selector();
+
+
+}
+
+</code></pre>
+<p>interestOps()是我们希望Selector监听Channel的哪些事件。我们将我们感兴趣的事件设置到该字段，这样在selection操作时，当发现该Channel有我们所感兴趣的事件发生时，就会将我们感兴趣的事件再设置到readyOps中，这样我们就能得知是哪些事件发生了以做相应处理。</p>
+<h4 id="3-通过Selector选择Channel"><a href="#3-通过Selector选择Channel" class="headerlink" title="3. 通过Selector选择Channel"></a>3. 通过Selector选择Channel</h4><h5 id="3-1-SelectionKey中三个集合"><a href="#3-1-SelectionKey中三个集合" class="headerlink" title="3.1 SelectionKey中三个集合"></a>3.1 SelectionKey中三个集合</h5><p>Selector中维护3个特别重要的SelectionKey集合，分别是:</p>
+<ul>
+<li>keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。</li>
+<li>selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。</li>
+<li>cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。</li>
+</ul>
+<h5 id="3-2-Selection的三种操作"><a href="#3-2-Selection的三种操作" class="headerlink" title="3.2 Selection的三种操作"></a>3.2 Selection的三种操作</h5><p>selection操作有3中类型：</p>
+<p>① select()：该方法会一直阻塞直到至少一个channel被选择(即，该channel注册的事件发生了)为止，除非当前线程发生中断或者selector的wakeup方法被调用。<br>② select(long time)：该方法和select()类似，该方法也会导致阻塞直到至少一个channel被选择(即，该channel注册的事件发生了)为止，除非下面3种情况任意一种发生：a) 设置的超时时间到达；b) 当前线程发生中断；c) selector的wakeup方法被调用<br>③ selectNow()：该方法不会发生阻塞，如果没有一个channel被选择也会立即返回。</p>
+<h5 id="3-3-唤醒Selector"><a href="#3-3-唤醒Selector" class="headerlink" title="3.3 唤醒Selector"></a>3.3 唤醒Selector</h5><pre><code>
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/10/Netty笔记整理之Buffer/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/10/Netty笔记整理之Buffer/" itemprop="url">Netty笔记整理之Buffer</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-10T18:02:20+08:00">
+                2019-01-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Netty笔记整理之Buffer"><a href="#Netty笔记整理之Buffer" class="headerlink" title="Netty笔记整理之Buffer"></a>Netty笔记整理之Buffer</h3><h4 id="1-Buffer概述"><a href="#1-Buffer概述" class="headerlink" title="1. Buffer概述"></a>1. Buffer概述</h4><p>Buffer 在 <code>java.nio</code> 包中实现，被定义成<strong>抽象类</strong>，从而实现一组常用的方法。</p>
+<ul>
+<li>我们可以将 Buffer 理解为<strong>一个数组的封装</strong>，例如 IntBuffer、CharBuffer、ByteBuffer 等分别对应 <code>int[]</code>、<code>char[]</code>、<code>byte[]</code> 等。</li>
+<li>MappedByteBuffer 用于实现内存映射文件，不是本文关注的重点。因此，感兴趣的胖友，可以自己 Google 了解，还是蛮有趣的。</li>
+</ul>
+<h4 id="2-Buffer"><a href="#2-Buffer" class="headerlink" title="2. Buffer"></a>2. Buffer</h4>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/07/Netty框架整理之JAVA IO模型/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1247,244 +1538,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/Spring之加载BeanDefinition/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/29/Spring之加载BeanDefinition/" itemprop="url">Spring之加载BeanDefinition</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-29T16:01:11+08:00">
-                2018-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/Spring之Bean的加载/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/29/Spring之Bean的加载/" itemprop="url">Spring之Bean的加载</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-29T15:59:09+08:00">
-                2018-12-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1537,7 +1590,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">52</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1548,7 +1601,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>

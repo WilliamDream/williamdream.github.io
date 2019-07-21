@@ -259,6 +259,475 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/12/SpringCloud学习之路配置管理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/12/SpringCloud学习之路配置管理/" itemprop="url">SpringCloud学习之路配置管理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-12T22:00:55+08:00">
+                2019-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/10/并发编程之AQS实现分析上篇/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="William">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/image/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个人的独奏">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/10/并发编程之AQS实现分析上篇/" itemprop="url">并发编程之AQS实现分析上篇</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-10T20:19:34+08:00">
+                2019-03-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="Lock接口"><a href="#Lock接口" class="headerlink" title="Lock接口"></a>Lock接口</h4><p>​    锁是用来控制多个线程访问共享资源的方式，一般来说，一个锁能够防止多个线程同时访问共享资源（但是有些锁可以允许多个线程并发的访问共享资源，比如读写锁）。在Lock接口出现之前，Java程序是靠synchronized关键字实现锁功能的，而Java SE 5之后，并发包中新增了Lock接口（以及相关实现类）用来实现锁功能，它提供了与synchronized关键字类似的同步功能，只是在使用时需要显式地获取和释放锁。Lock是一个接口，核心的两个方法lock和unlock，它有很多的实现，比如ReentrantLock、ReadLock、WriteLock。虽然它缺少了（通过synchronized块或者方法所提供的）隐式获取释放锁的便捷性，但是却拥有了锁获取与释放的可操作性、可中断的获取锁以及超时获取锁等多种synchronized关键字所不具备的同步特性。使锁的控制更加灵活性和控制性。</p>
+<pre><code class="java">public interface Lock {
+    void lock();
+    void lockInterruptibly() throws InterruptedException;
+    boolean tryLock();
+    boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+    void unlock();
+}
+</code></pre>
+<p>​    使用synchronized关键字将会隐式地获取锁，但是它将锁的获取和释放固化了，也就是先获取再释放。当然，这种方式简化了同步的管理，可是扩展性没有显示的锁获取和释放来的好。例如，针对一个场景，手把手进行锁获取和释放，先获得锁A，然后再获取锁B，当锁B获得后，释放锁A同时获取锁C，当锁C获得后，再释放B同时获取锁D，以此类推。这种场景下，synchronized关键字就不那么容易实现了，而使用Lock却容易许多。</p>
+<p>####AbstractQueuedSynchronizer</p>
+<p><code>AbstractQueuedSynchronizer</code>简写为<code>AQS</code>，即同步队列器。</p>
+<p>Lock之所以能实现线程安全的锁，主要的核心是<br>AQS(AbstractQueuedSynchronizer),AbstractQueuedSynchronizer提供了一个FIFO队列，可以看做是一个用来实。<br>现锁以及其他需要同步功能的框架。这里简称该类为AQS。AQS的使用依靠继承来完成，子类通过继承自AQS并实<br>现所需的方法来管理同步状态。例如常见的ReentrantLock，CountDownLatch等AQS的两种功能<br>从使用上来说，AQS的功能可以分为两种：独占和共享。<br>独占锁模式下，每次只能有一个线程持有锁，比如前面给大家演示的ReentrantLock就是以独占方式实现的互斥锁<br>共享锁模式下，允许多个线程同时获取锁，并发访问共享资源，比如ReentrantReadWriteLock。<br>很显然，独占锁是一种悲观保守的加锁策略，它限制了读/读冲突，如果某个只读线程获取锁，则其他读线程都只<br>能等待，这种情况下就限制了不必要的并发性，因为读操作并不会影响数据的一致性。共享锁则是一种乐观锁，它<br>放宽了加锁策略，允许多个执行读操作的线程同时访问共享资源。</p>
+<p>AbstractQueuedSynchzonizer是基于模板模式的实现，不过它的模板模式写法有点特别，整个类中没有任何一个abstract的抽象方法，取而代之的是，需要子类去实现的那些方法通过一个方法体抛出UnsupportedOperationException异常来让子类知道。</p>
+<p>AbstractQueuedSynchronizer类中一共有五处方法供子类实现，用表格总结一下：</p>
+<p><img src="/method.png" alt=""></p>
+<p>子类如：ReentrantReadWriteLock类。</p>
+<p>####基本的数据结构</p>
+<p>AbstractQueuedSynchronizer的基本数据结构为Node，定义如下：</p>
+<pre><code class="java">    static final class Node {
+        /** 共享 */
+        static final Node SHARED = new Node();
+        /** 独占 */
+        static final Node EXCLUSIVE = null;
+        /** 因为超时或者中断，节点会被设置为取消状态，被取消的节点时不会参与到竞争中的，他会一直保持取消           * 状态不会转变为其他状态；
+          */
+        static final int CANCELLED =  1;
+        /**
+         * 后继节点的线程处于等待状态，而当前节点的线程如果释放了同步状态或者被取消，将会通知后继节点，
+         * 使后继节点的线程得以运行
+         */
+        static final int SIGNAL    = -1;
+        /** waitStatus value to indicate thread is waiting on condition */
+        static final int CONDITION = -2;
+
+        static final int PROPAGATE = -3;
+
+        volatile int waitStatus;
+
+        volatile Node prev;
+
+        volatile Node next;
+
+        volatile Thread thread;
+
+        Node nextWaiter;
+
+    }
+</code></pre>
+<p>AQS使用一个int类型的成员变量state来表示同步状态，当state&gt;0时表示已经获取了锁，当state = 0时表示释放了锁。它提供了三个方法（getState()、setState(int newState)、compareAndSetState(int expect,int update)）来对同步状态state进行操作，当然AQS可以确保对state的操作是安全的。</p>
+<p>AQS通过内置的FIFO同步队列来完成资源获取线程的排队工作，如果当前线程获取同步状态失败（锁）时，AQS则会将当前线程以及等待状态等信息构造成一个节点（Node）并将其加入同步队列，同时会阻塞当前线程，当同步状态释放时，则会把节点中的线程唤醒，使其再次尝试获取同步状态。</p>
+<p>####独占式获取同步状态</p>
+<p>#####acquire方法</p>
+<p>独占式，同一时刻仅有一个线程持有同步状态。下面来看一下AbstractQuueuedSynchronizer的acquire方法实现流程，acquire方法是用于独占模式下进行操作的：</p>
+<pre><code class="java">    public final void acquire(int arg) {
+        if (!tryAcquire(arg) &amp;&amp;
+            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+            selfInterrupt();
+    }
+</code></pre>
+<p>各个方法定义如下：</p>
+<ol>
+<li>tryAcquire：去尝试获取锁，获取成功则设置锁状态并返回true，否则返回false。该方法自定义同步组件自己实现，该方法必须要保证线程安全的获取同步状态。</li>
+<li>addWaiter：如果tryAcquire返回false（获取同步状态失败），则调用该方法将当前线程封装成一个Node并加入到CLH同步队列尾部。</li>
+<li>acquireQueued：当前线程会根据公平性原则来进行阻塞等待（自旋）,直到获取锁为止；并且返回当前线程在等待过程中有没有中断过。</li>
+<li>selfInterrupt：产生一个中断。</li>
+</ol>
+<h5 id="tryAcquire方法"><a href="#tryAcquire方法" class="headerlink" title="tryAcquire方法"></a>tryAcquire方法</h5><pre><code class="java">protected boolean tryAcquire(int arg) {
+    throw new UnsupportedOperationException();
+}
+
+//子类中重写该方法
+protected final boolean tryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();        ////获取当前的状态，前面讲过，默认情况下是0表示无锁状态
+    if (c == 0) {
+        if (!hasQueuedPredecessors() &amp;&amp;
+            compareAndSetState(0, acquires)) {//通过cas来改变state状态的值，如果更新成功，表
+//示获取锁成功, 这个操作外部方法lock()就做过一次，这里再做只是为了再尝试一次，尽量以最简单的方式获取锁。
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    }
+    else if (current == getExclusiveOwnerThread()) {//如果当前线程等于获取锁的线程，表示重入，
+//直接累加重入次数
+        int nextc = c + acquires;
+        if (nextc &lt; 0)// overflow 如果这个状态值越界，抛出异常；如果没有越界，则设置后返回true
+            throw new Error(&quot;Maximum lock count exceeded&quot;);
+        setState(nextc);
+        return true;
+    }
+    //如果状态不为0，且当前线程不是owner，则返回false。
+    return false;
+}
+</code></pre>
+<p>#####addWaiter方法</p>
+<pre><code class="java">//传入的参数Node.EXCLUSIVE我们知道这是独占模式的
+private Node addWaiter(Node mode) {
+    Node node = new Node(Thread.currentThread(), mode);
+    // Try the fast path of enq; backup to full enq on failure
+    Node prev = tail;
+    if (prev != null) {
+        node.prev = prev;
+        if (compareAndSetTail(prev, node)) {
+            prev.next = node;
+            return node;
+        }
+    }
+    enq(node);
+    return node;
+}
+</code></pre>
+<p>获得当前数据结构中的尾节点，如果有尾节点，那么先获取这个节点认为它是前驱节点prev，然后：</p>
+<ul>
+<li>新生成的Node的前驱节点指向prev</li>
+<li>并发下只有一条线程可以通过CAS算法让自己的Node成为尾节点，此时将此prev的next指向该线程对应的Node</li>
+</ul>
+<p>因此在数据结构中有节点的情况下，所有新增节点都是作为尾节点插入数据结构。从注释上来看，这段逻辑的存在的意义是以最短路径O(1)的效果完成快速入队，以最大化减小开销。</p>
+<p>假如当前节点没有被设置为尾节点，那么执行enq方法：</p>
+<pre><code class="java">private Node enq(final Node node) {
+    /*
+     * 自旋过程，其实就是一个死循环而已。为什么采用for(;;)，是因为它执行的指令少，不占用寄存器。
+     */
+    for (;;) {
+        Node t = tail;// 此时head, tail都为null
+        if (t == null) { // Must initialize// 如果tail为null则说明队列首次使用,需要进行初始化
+            if (compareAndSetHead(new Node())) // 设置头节点,如果失败则存在竞争,留至下一轮循环
+                tail = head;// 用CAS的方式创建一个空的Node作为头结点，因为此时队列中只一个头结
+            //点，所以tail也指向head，第一次循环执行结束
+        } else {
+//进行第二次循环时，tail不为null，进入else区域。将当前线程的Node结点的prev指向tail，然后使用CAS将
+//tail指向Node,这部分代码和addWaiter代码一样，将当前节点添加到队列
+
+            node.prev = t;
+            if (compareAndSetTail(t, node)) {
+                t.next = node;//t此时指向tail,所以可以CAS成功，将tail重新指向CNode。此时t为更
+  //新前的tail的值，即指向空的头结点，t.next=node，就将头结点的后续结点指向Node，返回头结点
+                return t;
+            }
+        }
+    }
+}
+</code></pre>
+<p>这段代码的逻辑为：</p>
+<ol>
+<li>如果尾节点为空，即当前数据结构中没有节点，那么new一个不带任何状态的Node作为头节点</li>
+<li>如果尾节点不为空，那么并发下使用CAS算法将当前Node追加成为尾节点，由于是一个for(;;)循环，因此所有没有成功acquire的Node最终都会被追加到数据结构中</li>
+</ol>
+<p><img src="/2019-03-10-并发编程之AQS实现分析上篇/node.png" alt=""></p>
+<h5 id="acquireQueued方法"><a href="#acquireQueued方法" class="headerlink" title="acquireQueued方法"></a>acquireQueued方法</h5><p>队列构建好了，下一步就是在必要的时候从队列里面拿出一个Node了，这就是acquireQueued方法，顾名思义，从队列里面acquire。看下acquireQueued方法的实现：</p>
+<pre><code class="java">final boolean acquireQueued(final Node node, int arg) {
+    boolean failed = true;
+    try {
+        boolean interrupted = false;
+        for (;;) {
+            // 获取当前线程的前驱节点,若为null即刻抛出NullPointException
+            final Node p = node.predecessor(); 
+            if (p == head &amp;&amp; tryAcquire(arg)) { // 如果前驱为head才有资格进行锁的抢夺
+                // 获取锁成功后就不需要再进行同步操作了,获取锁成功的线程作为新的head节点
+                setHead(node); 
+                //凡是head节点,head.thread与head.prev永远为null, 但是head.next不为null
+                p.next = null; // help GC
+                failed = false; //获取锁成功
+                return interrupted;
+            }
+            //如果获取锁失败，则根据节点的waitStatus决定是否需要挂起线程
+            if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;
+            parkAndCheckInterrupt())// 若前面为true,则执行挂起,待下次唤醒的时候检测中断的标志
+                interrupted = true;
+        }
+    } finally {
+        if (failed) // 如果抛出异常则取消锁的获取,进行出队(sync queue)操作
+            cancelAcquire(node);
+    }
+}
+</code></pre>
+<p>从上面代码中可以看到，当前线程会一直尝试获取同步状态，当然前提是只有其前驱节点为头结点才能够尝试获取同步状态，理由：</p>
+<ol>
+<li>保持FIFO同步队列原则。</li>
+<li>头节点释放同步状态后，将会唤醒其后继节点，后继节点被唤醒后需要检查自己是否为头节点。</li>
+</ol>
+<p>原来的head节点释放锁以后，会从队列中移除，原来head节点的next节点会成为head节点。</p>
+<p><img src="/2019-03-10-并发编程之AQS实现分析上篇/node2.png" alt=""></p>
+<h5 id="shouldParkAfterFailedAcqui方法"><a href="#shouldParkAfterFailedAcqui方法" class="headerlink" title="shouldParkAfterFailedAcqui方法"></a>shouldParkAfterFailedAcqui方法</h5><p>从上面的分析可以看出，只有队列的第二个节点可以有机会争用锁，如果成功获取锁，则此节点晋升为头节点。对<br>于第三个及以后的节点，if (p == head)条件不成立，首先进行shouldParkAfterFailedAcquire(p, node)操作。该方法是判断一个争用锁的线程是否应该被阻塞。它首先判断一个节点的前置节点的状态是否为Node.SIGNAL，如果是，是说明此节点已经将状态设置-如果锁释放，则应当通知它，所以它可以安全的阻塞了，返回true</p>
+<pre><code class="java">    private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+        int ws = pred.waitStatus;    //前继节点的状态
+        if (ws == Node.SIGNAL) //如果是SIGNAL状态，意味着当前线程需要被unpark唤醒
+            /**
+             * 如果前节点的状态大于0，即为CANCELLED状态时，则会从前节点开始逐步循环找到一个没有                  * 被“CANCELLED”节点设置为当前节点的前节点，返回false。在下次循环执行                                  * shouldParkAfterFailedAcquire时，返回true。这个操作实际是把队列中CANCELLED
+             * 的节点剔除掉。
+            */
+            /*
+             * This node has already set status asking a release
+             * to signal it, so it can safely park.
+             */
+            return true;
+        if (ws &gt; 0) { // 如果前继节点是“取消”状态，则设置 “当前节点”的 “当前前继节点” 为 “‘原前继节
+                    // 点&#39;的前继节点”。
+            /*
+             * Predecessor was cancelled. Skip over predecessors and
+             * indicate retry.
+             */
+            do {
+                node.prev = pred = pred.prev;
+            } while (pred.waitStatus &gt; 0);
+            pred.next = node;
+        } else { // 如果前继节点为“0”或者“共享锁”状态，则设置前继节点为SIGNAL状态。
+            /*
+             * waitStatus must be 0 or PROPAGATE.  Indicate that we
+             * need a signal, but don&#39;t park yet.  Caller will need to
+             * retry to make sure it cannot acquire before parking.
+             */
+            compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
+        }
+        return false;
+    }
+</code></pre>
+<h5 id="parkAndCheckInterrupt方法"><a href="#parkAndCheckInterrupt方法" class="headerlink" title="parkAndCheckInterrupt方法"></a>parkAndCheckInterrupt方法</h5><p>如果shouldParkAfterFailedAcquire返回了true，则会执行：“parkAndCheckInterrupt()”方法，它是通过<br>LockSupport.park(this)将当前线程挂起到WATING状态，它需要等待一个中断、unpark方法来唤醒它，通过这样<br>一种FIFO的机制的等待，来实现了Lock的操作。</p>
+<pre><code class="java">private final boolean parkAndCheckInterrupt() {
+        LockSupport.park(this);// LockSupport提供park()和unpark()方法实现阻塞线程和解除线程阻塞
+        return Thread.interrupted();
+}
+</code></pre>
+<p><strong>总结:</strong>acquire(int arg)方法流程图如下：</p>
+<p><img src="/2019-03-10-并发编程之AQS实现分析上篇/process.png" alt=""></p>
+<p>sync有两种实现，一直是默认的非公平锁<code>NonfairSync</code>，另一种是公平锁<code>FairSync</code></p>
+<pre><code class="java">//比较并设置head值，当预期值null与内存值相等，将update设置进去
+private final boolean compareAndSetHead(Node update) {
+        return unsafe.compareAndSwapObject(this, headOffset, null, update);
+}
+</code></pre>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/09/Java设计模式总结篇/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1876,297 +2345,6 @@ OR ( type = &quot;java&quot; AND edition = 4 )
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/16/Netty笔记整理之Selector/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/16/Netty笔记整理之Selector/" itemprop="url">Netty笔记整理之Selector</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-16T11:49:50+08:00">
-                2019-01-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Netty笔记整理之Selector"><a href="#Netty笔记整理之Selector" class="headerlink" title="Netty笔记整理之Selector"></a>Netty笔记整理之Selector</h3><h4 id="1-Selector概述"><a href="#1-Selector概述" class="headerlink" title="1. Selector概述"></a>1. Selector概述</h4><p><strong>Selector</strong> 是实现<strong>多路复用器</strong>的关键类 。它是Java NIO核心组件中的一个，Channel代表这一个网络连接通道，可以将Channel注册到Selector中以实现Selector对其的管理。</p>
-<h5 id="1-1-Selector的创建"><a href="#1-1-Selector的创建" class="headerlink" title="1.1 Selector的创建"></a>1.1 Selector的创建</h5><p>通过open()来创建Selector.</p>
-<pre><code class="java">Selector selector = Selector.open()
-</code></pre>
-<h5 id="1-2-将Channel注册到Selector中"><a href="#1-2-将Channel注册到Selector中" class="headerlink" title="1.2 将Channel注册到Selector中"></a>1.2 将Channel注册到Selector中</h5><pre><code class="java">channel.configureBlocking(false);
-SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
-</code></pre>
-<ul>
-<li><p>如果一个 Channel 要注册到 Selector 中，那么该 Channel 必须是<strong>非阻塞</strong>，<code>SelectableChannel</code>抽象类有一个 <strong>configureBlocking()</strong> 方法用于使通道处于阻塞模式或非阻塞模式。所以有<code>channel.configureBlocking(false);</code> 代码块。FileChannel不适用于Selector，FileChannel不能切换为非阻塞模式，更准确的来说是因为FileChannel没有继承SelectableChannel。因此，FileChannel 是不能够注册到 Channel 中的，因为它是<strong>阻塞</strong>的。</p>
-</li>
-<li><p>在 <code>register(Selector selector, int interestSet)</code> 方法的第二个参数，表示一个“interest 集合”，意思是通过 Selector 监听 Channel 时，对哪些事件感兴趣。可以监听四种不同类型的事件：</p>
-<p>Connect：连接完成事件( TCP 连接 )，仅适用于客户端，对应 <code>SelectionKey.OP_CONNECT</code> ；</p>
-<p>Accept：接受新连接事件，仅适用于服务端，对应 <code>SelectionKey.OP_ACCEPT</code> ；</p>
-<p>Read：读事件，适用于两端，对应 <code>SelectionKey.OP_READ</code> ，表示 Buffer 可读；</p>
-<p>Write：写时间，适用于两端，对应 <code>SelectionKey.OP_WRITE</code> ，表示 Buffer 可写。</p>
-</li>
-</ul>
-<p>  因为Selector可以对Channel的多个事件感兴趣，我们可以使用<strong>或运算</strong> <code>|</code> 来关注多个事件。</p>
-<pre><code class="java">  channel.register(selector, SelectionKey.OP_ACCEPT|SelectionKey.OP_READ|SelectionKey.OP_WRITE);
-</code></pre>
-<h4 id="2-SelectorKey"><a href="#2-SelectorKey" class="headerlink" title="2. SelectorKey"></a>2. SelectorKey</h4><h5 id="2-1-SelectorKey"><a href="#2-1-SelectorKey" class="headerlink" title="2.1 SelectorKey"></a>2.1 SelectorKey</h5><p>当Channel注册到Selector后会返回一个<strong>SelectionKey</strong>对象，该SelectionKey对象则代表这这个Channel和它注册的Selector间的关系。</p>
-<pre><code>SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
-</code></pre><p><code>SelectionKey</code>是个抽象类，其中有四个重要属性：</p>
-<pre><code class="java">package java.nio.channels;
-public abstract class SelectionKey {
-    //感兴趣的事件集
-    public abstract int interestOps();
-    //准备就绪的事件集合
-    public abstract int readyOps();
-    //
-    public abstract SelectableChannel channel();
-    //
-    public abstract Selector selector();
-
-
-}
-
-</code></pre>
-<p>interestOps()是我们希望Selector监听Channel的哪些事件。我们将我们感兴趣的事件设置到该字段，这样在selection操作时，当发现该Channel有我们所感兴趣的事件发生时，就会将我们感兴趣的事件再设置到readyOps中，这样我们就能得知是哪些事件发生了以做相应处理。</p>
-<h4 id="3-通过Selector选择Channel"><a href="#3-通过Selector选择Channel" class="headerlink" title="3. 通过Selector选择Channel"></a>3. 通过Selector选择Channel</h4><h5 id="3-1-SelectionKey中三个集合"><a href="#3-1-SelectionKey中三个集合" class="headerlink" title="3.1 SelectionKey中三个集合"></a>3.1 SelectionKey中三个集合</h5><p>Selector中维护3个特别重要的SelectionKey集合，分别是:</p>
-<ul>
-<li>keys：所有注册到Selector的Channel所表示的SelectionKey都会存在于该集合中。keys元素的添加会在Channel注册到Selector时发生。</li>
-<li>selectedKeys：该集合中的每个SelectionKey都是其对应的Channel在上一次操作selection期间被检查到至少有一种SelectionKey中所感兴趣的操作已经准备好被处理。该集合是keys的一个子集。</li>
-<li>cancelledKeys：执行了取消操作的SelectionKey会被放入到该集合中。该集合是keys的一个子集。</li>
-</ul>
-<h5 id="3-2-Selection的三种操作"><a href="#3-2-Selection的三种操作" class="headerlink" title="3.2 Selection的三种操作"></a>3.2 Selection的三种操作</h5><p>selection操作有3中类型：</p>
-<p>① select()：该方法会一直阻塞直到至少一个channel被选择(即，该channel注册的事件发生了)为止，除非当前线程发生中断或者selector的wakeup方法被调用。<br>② select(long time)：该方法和select()类似，该方法也会导致阻塞直到至少一个channel被选择(即，该channel注册的事件发生了)为止，除非下面3种情况任意一种发生：a) 设置的超时时间到达；b) 当前线程发生中断；c) selector的wakeup方法被调用<br>③ selectNow()：该方法不会发生阻塞，如果没有一个channel被选择也会立即返回。</p>
-<h5 id="3-3-唤醒Selector"><a href="#3-3-唤醒Selector" class="headerlink" title="3.3 唤醒Selector"></a>3.3 唤醒Selector</h5><pre><code>
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/10/Netty笔记整理之Buffer/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="William">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/upload/image/head.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个人的独奏">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/10/Netty笔记整理之Buffer/" itemprop="url">Netty笔记整理之Buffer</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-10T18:02:20+08:00">
-                2019-01-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Netty笔记整理之Buffer"><a href="#Netty笔记整理之Buffer" class="headerlink" title="Netty笔记整理之Buffer"></a>Netty笔记整理之Buffer</h3><h4 id="1-Buffer概述"><a href="#1-Buffer概述" class="headerlink" title="1. Buffer概述"></a>1. Buffer概述</h4><p>Buffer 在 <code>java.nio</code> 包中实现，被定义成<strong>抽象类</strong>，从而实现一组常用的方法。</p>
-<ul>
-<li>我们可以将 Buffer 理解为<strong>一个数组的封装</strong>，例如 IntBuffer、CharBuffer、ByteBuffer 等分别对应 <code>int[]</code>、<code>char[]</code>、<code>byte[]</code> 等。</li>
-<li>MappedByteBuffer 用于实现内存映射文件，不是本文关注的重点。因此，感兴趣的胖友，可以自己 Google 了解，还是蛮有趣的。</li>
-</ul>
-<h4 id="2-Buffer"><a href="#2-Buffer" class="headerlink" title="2. Buffer"></a>2. Buffer</h4>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2219,7 +2397,7 @@ public abstract class SelectionKey {
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">52</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2230,7 +2408,7 @@ public abstract class SelectionKey {
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
